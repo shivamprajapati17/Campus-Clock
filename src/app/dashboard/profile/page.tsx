@@ -11,7 +11,9 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Toggle } from '@/components/ui/Toggle';
 import { Progress } from '@/components/ui/Progress';
 import { MOCK_USERS } from '@/lib/data/mockData';
-import { writeDemoSession, clearDemoSession } from '@/lib/utils';
+import { useMasterData } from '@/store/useMasterData';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { writeDemoSession, clearDemoSession, resolveDepartmentId } from '@/lib/utils';
 import type { User, UserRole } from '@/lib/types';
 import {
   User as UserIcon,
@@ -26,6 +28,17 @@ import {
 export default function ProfilePage() {
   const router = useRouter();
   const { user, setUser, clearUser } = useStore();
+  const departments = useMasterData((s) => s.departments);
+
+  const departmentLabel = (() => {
+    const id = resolveDepartmentId(
+      departments,
+      user?.department_id,
+      user?.department_code
+    );
+    const dept = departments.find((d) => d.id === id);
+    return dept ? `${dept.name} (${dept.code})` : 'All Departments';
+  })();
 
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -49,10 +62,23 @@ export default function ProfilePage() {
     writeDemoSession(persona);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    // Mirror the sidebar: drop the local persona first so the UI reacts
+    // instantly, then end the real Supabase session. Without the second step
+    // the middleware would still let this browser back into /dashboard.
     clearDemoSession();
     clearUser();
+
+    if (isSupabaseConfigured()) {
+      try {
+        await createClient().auth.signOut();
+      } catch (err) {
+        console.warn('[campus-clock] sign-out could not reach Supabase', err);
+      }
+    }
+
     router.push('/login');
+    router.refresh();
   };
 
   return (
@@ -124,7 +150,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-between py-1">
                 <span>Department</span>
-                <span className="font-black text-black">Computer Engineering</span>
+                <span className="font-black text-black">{departmentLabel}</span>
               </div>
             </div>
           </Card>
