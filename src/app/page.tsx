@@ -18,8 +18,15 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FDF6EC] text-black selection:bg-[#FFD93D] selection:text-black">
       {/* ── Top Announcement Bar ── */}
-      <div className="bg-[#FFD93D] border-b-3 border-black py-2 px-4 text-center text-xs md:text-sm font-black uppercase tracking-wider">
-        🎉 Welcome to Campus Clock — AI-Powered 0-Clash Timetable SaaS for Academic Institutions
+      <div className="bg-[#FFD93D] border-b-3 border-black py-2 px-4 text-center text-xs md:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 flex-wrap">
+        <span>🎉 Campus Clock SaaS • 0-Clash AI Timetables</span>
+        <span className="hidden sm:inline">•</span>
+        <Link
+          href="/overthinking-engine"
+          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#0B0C10] text-[#00F5FF] text-[11px] font-mono hover:text-white transition-colors border border-black"
+        >
+          <span>🧠 Launch "The Overthinking Engine" ↗</span>
+        </Link>
       </div>
 
       {/* ── Navbar ── */}
@@ -46,9 +53,12 @@ export default function LandingPage() {
             <a href="#roles" className="hover:text-[#A78BFA] transition-colors">
               Role Matrix
             </a>
-            <a href="#demo" className="hover:text-[#2DD4BF] transition-colors">
-              Demo Access
-            </a>
+            <Link
+              href="/overthinking-engine"
+              className="text-[#9D4EDD] hover:text-[#00F5FF] flex items-center gap-1 font-bold"
+            >
+              <span>Overthinking Engine</span>
+            </Link>
             <a
               href="https://github.com/shivamprajapati17/Campus-Clock.git"
               target="_blank"
