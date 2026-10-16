@@ -23,12 +23,58 @@ import {
 } from 'lucide-react';
 import type { User, UserRole } from '@/lib/types';
 
-/** 1-click demo personas shown on the login screen. */
-const DEMO_CREDENTIALS: Record<UserRole, { email: string; password: string }> = {
-  management: { email: 'management@campus.edu', password: 'admin123' },
-  hod: { email: 'hod.cmpn@campus.edu', password: 'hod123' },
-  teacher: { email: 'teacher.a1@campus.edu', password: 'teach123' },
-  student: { email: 'student.a1@campus.edu', password: 'stud123' },
+/** Institution ids used by the seeded campus data (must be valid UUIDs). */
+const DEMO_DEPARTMENT_ID = '11111111-1111-4111-8111-111111111111';
+const DEMO_DIVISION_ID = '22222222-2222-4222-8222-222222222222';
+
+/**
+ * Role profiles. Selecting one sets the role, name and department that a new
+ * account is created with — the email and password stay fully editable, so a
+ * visitor can register with their own address and still land in the right role.
+ */
+const PROFILES: Record<
+  UserRole,
+  {
+    name: string;
+    email: string;
+    password: string;
+    department_id: string | null;
+    division_id: string | null;
+    faculty_initial: string | null;
+  }
+> = {
+  management: {
+    name: 'Dr. Arthur Vance (Dean)',
+    email: 'management@campus.edu',
+    password: 'admin123',
+    department_id: null,
+    division_id: null,
+    faculty_initial: null,
+  },
+  hod: {
+    name: 'Prof. Rajesh Kulkarni',
+    email: 'hod.cmpn@campus.edu',
+    password: 'hod123',
+    department_id: DEMO_DEPARTMENT_ID,
+    division_id: null,
+    faculty_initial: 'RK',
+  },
+  teacher: {
+    name: 'Prof. Anita Sharma',
+    email: 'teacher.a1@campus.edu',
+    password: 'teach123',
+    department_id: DEMO_DEPARTMENT_ID,
+    division_id: DEMO_DIVISION_ID,
+    faculty_initial: 'AS',
+  },
+  student: {
+    name: 'Aarav Patel',
+    email: 'student.a1@campus.edu',
+    password: 'stud123',
+    department_id: DEMO_DEPARTMENT_ID,
+    division_id: DEMO_DIVISION_ID,
+    faculty_initial: null,
+  },
 };
 
 function LoginForm() {
@@ -39,28 +85,28 @@ function LoginForm() {
   // Deep links such as /login?role=hod prefill straight from the query param,
   // so no state-setting effect is needed.
   const roleParam = searchParams.get('role') as UserRole | null;
-  const initialCreds = roleParam ? DEMO_CREDENTIALS[roleParam] : undefined;
+  const initialProfile = roleParam ? PROFILES[roleParam] : undefined;
 
   // Land the user back on whatever protected page sent them here. Only
   // same-origin relative paths are honoured, so this can't be an open redirect.
   const rawNext = searchParams.get('next');
   const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : '/dashboard';
 
-  const [email, setEmail] = useState(initialCreds?.email ?? '');
-  const [password, setPassword] = useState(initialCreds?.password ?? '');
+  const [email, setEmail] = useState(initialProfile?.email ?? '');
+  const [password, setPassword] = useState(initialProfile?.password ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(
-    initialCreds ? roleParam : null
+    initialProfile ? roleParam : null
   );
 
   const handleQuickSelectRole = useCallback((role: UserRole) => {
     setSelectedRole(role);
     setError('');
-    const creds = DEMO_CREDENTIALS[role];
-    if (creds) {
-      setEmail(creds.email);
-      setPassword(creds.password);
+    const profile = PROFILES[role];
+    if (profile) {
+      setEmail(profile.email);
+      setPassword(profile.password);
     }
   }, []);
 
@@ -69,51 +115,105 @@ function LoginForm() {
     setLoading(true);
     setError('');
 
+    const cleanEmail = email.trim().toLowerCase();
+    const profile = selectedRole ? PROFILES[selectedRole] : undefined;
+
     try {
       let loggedInUser: User | null = null;
 
-      // 1. Prefer a real Supabase session when the project is configured.
       if (isSupabaseConfigured()) {
-        try {
-          const supabase = createClient();
-          const { data } = await supabase.auth.signInWithPassword({
-            email: email.trim(),
+        const supabase = createClient();
+
+        // 1. Sign in with an existing account.
+        const { data: signInData, error: signInError } =
+          await supabase.auth.signInWithPassword({
+            email: cleanEmail,
             password,
           });
 
-          if (data?.user) {
-            const meta = (data.user.user_metadata ?? {}) as Record<string, unknown>;
-            loggedInUser = {
-              id: data.user.id,
-              name: (meta.name as string) || email.split('@')[0],
-              email: data.user.email || email.trim(),
-              role: (meta.role as UserRole) || selectedRole || 'student',
-              department_id: (meta.department_id as string) ?? null,
-              division_id: (meta.division_id as string) ?? null,
-              faculty_initial: (meta.faculty_initial as string) ?? null,
-              must_change_password: false,
-              created_at: data.user.created_at,
-            };
-          }
-        } catch {
-          // Auth/network failure — fall through to the built-in demo personas.
-        }
-      }
+        let authUser = signInData?.user ?? null;
 
-      // 2. Fall back to the built-in demo personas so the demo always works.
-      if (!loggedInUser) {
+        if (signInError) {
+          const msg = signInError.message ?? '';
+          const unknownAccount =
+            (signInError as { code?: string }).code === 'invalid_credentials' ||
+            /invalid login credentials|user not found/i.test(msg);
+
+          if (!unknownAccount) {
+            throw new Error(msg || 'Sign-in failed. Please try again.');
+          }
+
+          // 2. No account for this email yet — register it with the chosen role
+          //    so the visitor can use their own address, not just the samples.
+          const { data: signUpData, error: signUpError } =
+            await supabase.auth.signUp({
+              email: cleanEmail,
+              password,
+              options: {
+                data: {
+                  name: profile?.name || cleanEmail.split('@')[0],
+                  role: selectedRole ?? 'student',
+                  department_id: profile?.department_id ?? null,
+                  division_id: profile?.division_id ?? null,
+                  faculty_initial: profile?.faculty_initial ?? null,
+                },
+              },
+            });
+
+          if (signUpError) {
+            const upMsg = signUpError.message ?? '';
+            if (/already registered|already been registered|user already/i.test(upMsg)) {
+              throw new Error(
+                'That email already has an account — please check your password.'
+              );
+            }
+            throw new Error(upMsg || 'Could not create your account.');
+          }
+
+          if (!signUpData.session) {
+            setError(
+              'Account created. Please confirm the email we sent you, then sign in.'
+            );
+            return;
+          }
+
+          authUser = signUpData.user;
+        }
+
+        if (!authUser) {
+          throw new Error('Sign-in failed. Please try again.');
+        }
+
+        const meta = (authUser.user_metadata ?? {}) as Record<string, unknown>;
+        loggedInUser = {
+          id: authUser.id,
+          name: (meta.name as string) || profile?.name || cleanEmail.split('@')[0],
+          email: authUser.email || cleanEmail,
+          role: (meta.role as UserRole) || selectedRole || 'student',
+          department_id:
+            (meta.department_id as string) ?? profile?.department_id ?? null,
+          division_id:
+            (meta.division_id as string) ?? profile?.division_id ?? null,
+          faculty_initial:
+            (meta.faculty_initial as string) ?? profile?.faculty_initial ?? null,
+          must_change_password: false,
+          created_at: authUser.created_at,
+        };
+      } else {
+        // Supabase is not configured (local/preview): use the bundled personas
+        // so the app is still fully explorable.
         const matchedUser = MOCK_USERS.find(
-          (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+          (u) => u.email.toLowerCase() === cleanEmail
         );
 
         loggedInUser = matchedUser ?? {
           id: 'user-custom-' + Date.now(),
-          name: email.split('@')[0],
-          email: email.trim(),
-          role: selectedRole || 'student',
-          department_id: 'dept-cmpn',
-          division_id: 'div-se-a',
-          faculty_initial: null,
+          name: profile?.name || cleanEmail.split('@')[0],
+          email: cleanEmail,
+          role: selectedRole ?? 'student',
+          department_id: profile?.department_id ?? null,
+          division_id: profile?.division_id ?? null,
+          faculty_initial: profile?.faculty_initial ?? null,
           must_change_password: false,
           created_at: new Date().toISOString(),
         };
@@ -127,8 +227,10 @@ function LoginForm() {
       setTimeout(() => {
         router.push(nextPath);
       }, 400);
-    } catch {
-      setError('Invalid login credentials. Please check or click a demo role.');
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Unable to sign in right now.'
+      );
     } finally {
       setLoading(false);
     }
@@ -159,7 +261,7 @@ function LoginForm() {
             Account Login
           </h2>
           <p className="text-xs font-bold text-black/60 mt-1">
-            Choose a demo persona or enter institutional email
+            Pick your role, then sign in — or register with your own email.
           </p>
         </div>
 
@@ -168,10 +270,10 @@ function LoginForm() {
           <div className="flex items-center justify-between mb-2.5">
             <span className="text-xs font-black uppercase text-black flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-[#FF6B70]" />
-              <span>1-Click Demo Profiles</span>
+              <span>1 · Choose your role</span>
             </span>
             <span className="text-[10px] font-bold text-black/60">
-              Click to autofill
+              Sets your permissions
             </span>
           </div>
 
@@ -228,6 +330,12 @@ function LoginForm() {
               <span className="text-[9px] font-bold opacity-80">Aarav</span>
             </button>
           </div>
+
+          <p className="text-[11px] font-bold text-black/60 mt-3 leading-snug">
+            Selecting a role prefills a sample address. The email and password below
+            stay editable — use your own address instead and we&apos;ll create your
+            account in that role.
+          </p>
         </div>
 
         {/* Error message */}
@@ -239,25 +347,38 @@ function LoginForm() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Institutional Email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="e.g. hod.cmpn@campus.edu"
-            icon={<Mail className="w-4 h-4 stroke-[2.2]" />}
-          />
+          <div>
+            <span className="text-xs font-black uppercase tracking-wider text-black">
+              2 · Your details
+            </span>
+            <div className="mt-2 space-y-4">
+              <Input
+                label="Email Address"
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@yourcollege.edu"
+                icon={<Mail className="w-4 h-4 stroke-[2.2]" />}
+              />
 
-          <Input
-            label="Password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            icon={<Lock className="w-4 h-4 stroke-[2.2]" />}
-          />
+              <Input
+                label="Password"
+                type="password"
+                required
+                minLength={6}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                icon={<Lock className="w-4 h-4 stroke-[2.2]" />}
+              />
+            </div>
+            <p className="text-[11px] font-bold text-black/55 mt-2">
+              New email? We create the account automatically in the role you picked.
+            </p>
+          </div>
 
           <div className="flex items-center justify-between text-xs font-bold pt-1">
             <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -277,7 +398,7 @@ function LoginForm() {
             className="w-full mt-2"
             icon={<ArrowRight className="w-5 h-5 stroke-[2.5]" />}
           >
-            Enter Campus Clock
+            Sign In / Create Account
           </Button>
         </form>
 
