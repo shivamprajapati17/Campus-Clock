@@ -5,7 +5,7 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://campusclock.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14_App_Router-black)](https://nextjs.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16_App_Router-black)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-Neubrutalism-orange)](https://tailwindcss.com/)
 
 ---
@@ -13,6 +13,15 @@
 ## 🚀 Live Demo & Deployment
 - **Live Production URL**: [https://campusclock.vercel.app/](https://campusclock.vercel.app/)
 - **GitHub Repository**: [https://github.com/shivamprajapati17/Campus-Clock.git](https://github.com/shivamprajapati17/Campus-Clock.git)
+
+---
+
+## 📖 Documentation
+
+- **[Complete Guide](docs/Campus-Clock-Guide.md)** — every feature explained screen by screen, how the
+  generator works, how authentication works, the architecture and file map, the API reference,
+  and an honest breakdown of what is real versus simulated.
+- **[Complete Guide (PDF)](docs/Campus-Clock-Guide.pdf)** — the same guide as a print-ready 12-page document.
 
 ---
 
@@ -65,9 +74,9 @@ Campus Clock features a bold, human-designed **Neubrutalism** visual aesthetic:
 | **Drag & Drop Editor** | ✅ | ✅ | Request Only | ❌ |
 | **Publish Schedules** | ✅ | ✅ | ❌ | ❌ |
 | **View Published Timetable** | ✅ | ✅ | ✅ | ✅ |
-| **Executive Master View** | ✅ | ❌ | ❌ | ❌ |
+| **Master Data** (departments & divisions) | ✅ All branches | ✅ Own branch | ❌ | ❌ |
+| **User Provisioning & Editing** | ✅ All users | ✅ Own department | ❌ | ❌ |
 | **Free Faculty Finder** | ✅ | ✅ | ✅ | ❌ |
-| **User Provisioning** | ✅ | ❌ | ❌ | ❌ |
 | **Campus Chat & PDF Export** | ✅ | ✅ | ✅ | ✅ |
 
 ---
@@ -114,20 +123,22 @@ The login screen includes instant 1-click autofill buttons for all 4 roles:
 
 ## 📡 REST API Endpoints
 
-| Method | Endpoint | Description | Access |
-|---|---|---|---|
-| `POST` | `/api/auth/login` | Session login & JWT token issuance | Public |
-| `POST` | `/api/auth/register` | Provision new campus user | Management |
-| `GET` | `/api/timetable` | Filter timetables by dept, division, status | All |
-| `POST` | `/api/timetable/generate` | Run AI 0-clash backtracking algorithm | HOD, Mgmt |
-| `GET` | `/api/timetable/:id` | Fetch timetable grid with joined entities | All |
-| `POST` | `/api/timetable/:id/publish`| Publish draft timetable to campus | HOD, Mgmt |
-| `GET` | `/api/timetable/master` | Multi-department status matrix | Management |
-| `GET` | `/api/faculty/free` | Discover available teachers by day & slot | Teacher, HOD, Mgmt |
-| `GET` | `/api/chat/:roomId` | Fetch messages for room | All |
-| `POST` | `/api/chat/:roomId` | Post message to channel | All |
-| `GET` | `/api/notifications` | User notification stream | All |
-| `POST` | `/api/seed` | Reset & seed database with demo data | Public / Admin |
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/login` | Demo-persona sign-in; sets the session cookie |
+| `POST` | `/api/auth/register` | Returns a provisioned user object |
+| `GET` | `/api/timetable` | List timetables; filter by `department_id`, `division_id`, `status` |
+| `POST` | `/api/timetable/generate` | Run the 0-clash backtracking engine for a division |
+| `GET` | `/api/faculty/free` | Free faculty for `?day=` and `?slot=` |
+| `GET` | `/api/chat/[roomId]` | Messages in a room |
+| `POST` | `/api/chat/[roomId]` | Post a message to a room |
+| `GET` | `/api/notifications` | Notification stream |
+| `PUT` | `/api/notifications` | Mark a notification read |
+| `POST` | `/api/overthink` | Generate a thought-spiral tree |
+| `POST` | `/api/seed` | Report seed record counts |
+
+> Authentication is backed by Supabase; the remaining handlers read from the in-app seed data.
+> See [What is real and what is simulated](docs/Campus-Clock-Guide.md#12-what-is-real-and-what-is-simulated).
 
 ---
 
