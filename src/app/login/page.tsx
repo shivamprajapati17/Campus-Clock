@@ -10,17 +10,8 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { InstitutionLogos } from '@/components/layout/InstitutionLogos';
-import {
-  Clock,
-  Mail,
-  Lock,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Sparkles,
-} from 'lucide-react';
+import { Clock, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
 import type { User, UserRole } from '@/lib/types';
 
 /** Institution ids used by the seeded campus data (must be valid UUIDs). */
