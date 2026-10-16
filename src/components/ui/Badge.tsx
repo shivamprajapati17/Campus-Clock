@@ -5,7 +5,16 @@ import { cn } from '@/lib/utils';
 import type { UserRole } from '@/lib/types';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  color?: 'primary' | 'secondary' | 'accent' | 'yellow' | 'blue' | 'orange' | 'outline' | UserRole;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'warning'
+    | 'yellow'
+    | 'blue'
+    | 'orange'
+    | 'outline'
+    | UserRole;
   size?: 'sm' | 'md';
 }
 
@@ -20,6 +29,7 @@ export function Badge({
     primary: 'bg-[#FF6B70] text-white',
     secondary: 'bg-[#A78BFA] text-black',
     accent: 'bg-[#42D1C3] text-black',
+    warning: 'bg-[#FFE66D] text-black',
     yellow: 'bg-[#FFE66D] text-black',
     blue: 'bg-[#FF6B70] text-black',
     orange: 'bg-[#FFA477] text-black',
