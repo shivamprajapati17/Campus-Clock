@@ -9,11 +9,10 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import {
   MOCK_TIMETABLES,
-  MOCK_DEPARTMENTS,
-  MOCK_DIVISIONS,
   MOCK_FACULTY,
   MOCK_NOTIFICATIONS,
 } from '@/lib/data/mockData';
+import { useMasterData } from '@/store/useMasterData';
 import {
   Sparkles,
   Calendar,
@@ -31,6 +30,8 @@ import {
 export default function DashboardPage() {
   const { user } = useStore();
   const role = user?.role || 'management';
+  const departments = useMasterData((s) => s.departments);
+  const divisions = useMasterData((s) => s.divisions);
 
   const publishedCount = MOCK_TIMETABLES.filter((t) => t.status === 'published').length;
   const draftCount = MOCK_TIMETABLES.filter((t) => t.status === 'draft').length;
@@ -91,7 +92,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Departments"
-          value={MOCK_DEPARTMENTS.length}
+          value={departments.length}
           subtitle="Active Engineering Branches"
           icon={<Layers className="w-5 h-5 text-black" />}
           color="#FFF"
@@ -99,7 +100,7 @@ export default function DashboardPage() {
 
         <StatCard
           title="Divisions"
-          value={MOCK_DIVISIONS.length}
+          value={divisions.length}
           subtitle="Classes Scheduled"
           icon={<Users className="w-5 h-5 text-black" />}
           color="#FFF"

@@ -32,6 +32,8 @@ const PROFILES: Record<
     department_id: string | null;
     division_id: string | null;
     faculty_initial: string | null;
+    /** Branch short code, used to line the account up with the master matrix. */
+    department_code: string | null;
   }
 > = {
   management: {
@@ -41,6 +43,7 @@ const PROFILES: Record<
     department_id: null,
     division_id: null,
     faculty_initial: null,
+    department_code: null,
   },
   hod: {
     name: 'Prof. Rajesh Kulkarni',
@@ -49,6 +52,7 @@ const PROFILES: Record<
     department_id: DEMO_DEPARTMENT_ID,
     division_id: null,
     faculty_initial: 'RK',
+    department_code: 'CMPN',
   },
   teacher: {
     name: 'Prof. Anita Sharma',
@@ -57,6 +61,7 @@ const PROFILES: Record<
     department_id: DEMO_DEPARTMENT_ID,
     division_id: DEMO_DIVISION_ID,
     faculty_initial: 'AS',
+    department_code: 'CMPN',
   },
   student: {
     name: 'Aarav Patel',
@@ -65,6 +70,7 @@ const PROFILES: Record<
     department_id: DEMO_DEPARTMENT_ID,
     division_id: DEMO_DIVISION_ID,
     faculty_initial: null,
+    department_code: 'CMPN',
   },
 };
 
@@ -147,6 +153,7 @@ function LoginForm() {
                   department_id: profile?.department_id ?? null,
                   division_id: profile?.division_id ?? null,
                   faculty_initial: profile?.faculty_initial ?? null,
+                  department_code: profile?.department_code ?? null,
                 },
               },
             });
@@ -187,6 +194,8 @@ function LoginForm() {
             (meta.division_id as string) ?? profile?.division_id ?? null,
           faculty_initial:
             (meta.faculty_initial as string) ?? profile?.faculty_initial ?? null,
+          department_code:
+            (meta.department_code as string) ?? profile?.department_code ?? null,
           must_change_password: false,
           created_at: authUser.created_at,
         };
@@ -205,6 +214,7 @@ function LoginForm() {
           department_id: profile?.department_id ?? null,
           division_id: profile?.division_id ?? null,
           faculty_initial: profile?.faculty_initial ?? null,
+          department_code: profile?.department_code ?? null,
           must_change_password: false,
           created_at: new Date().toISOString(),
         };

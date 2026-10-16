@@ -10,13 +10,12 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { TimetableGrid } from '@/components/timetable/TimetableGrid';
 import {
-  MOCK_DEPARTMENTS,
-  MOCK_DIVISIONS,
   MOCK_SUBJECTS,
   MOCK_FACULTY,
   MOCK_ROOMS,
   MOCK_ENTRIES_SE_A,
 } from '@/lib/data/mockData';
+import { useMasterData } from '@/store/useMasterData';
 import { generateTimetable } from '@/lib/generator/engine';
 import {
   Sparkles,
@@ -31,12 +30,34 @@ import {
 import type { TimetableEntry, Clash } from '@/lib/types';
 import confetti from 'canvas-confetti';
 
+/**
+ * Reading the clock is an event-time concern, not a render-time one. Keeping it
+ * at module scope means the component body stays free of impure calls while the
+ * measured generation time is reported exactly as before.
+ */
+function nowMs(): number {
+  return typeof performance === 'undefined' ? Date.now() : performance.now();
+}
+
 export default function GeneratePage() {
   const router = useRouter();
 
-  const [departmentId, setDepartmentId] = useState(MOCK_DEPARTMENTS[0].id);
-  const [divisionId, setDivisionId] = useState(MOCK_DIVISIONS[1].id); // SE-B (CMPN)
+  const departments = useMasterData((s) => s.departments);
+  const divisions = useMasterData((s) => s.divisions);
+
+  const [departmentId, setDepartmentId] = useState('');
+  const [divisionId, setDivisionId] = useState('');
   const [academicYear, setAcademicYear] = useState('2026-2027 (Even)');
+
+  // Departments and divisions come from the editable master data, so anything
+  // an operator adds on the Master Matrix can be generated straight away.
+  const activeDept =
+    departments.find((d) => d.id === departmentId) ?? departments[0];
+  const deptDivisions = divisions.filter(
+    (d) => d.department_id === activeDept?.id
+  );
+  const activeDivision =
+    deptDivisions.find((d) => d.id === divisionId) ?? deptDivisions[0];
 
   const [generating, setGenerating] = useState(false);
   const [generatedEntries, setGeneratedEntries] = useState<TimetableEntry[] | null>(null);
@@ -48,11 +69,15 @@ export default function GeneratePage() {
     setGenerating(true);
     setPublishedSuccess(false);
 
-    const startTime = performance.now();
+    const startTime = nowMs();
 
     setTimeout(() => {
-      // Find current division
-      const division = MOCK_DIVISIONS.find((d) => d.id === divisionId) || MOCK_DIVISIONS[0];
+      // Find current division (falling back to the branch's first class)
+      const division = activeDivision;
+      if (!division) {
+        setGenerating(false);
+        return;
+      }
 
       // Prepare assignments
       const assignments = [
@@ -71,7 +96,7 @@ export default function GeneratePage() {
         rooms: MOCK_ROOMS,
       });
 
-      const endTime = performance.now();
+      const endTime = nowMs();
       const elapsed = Math.round(endTime - startTime + 85); // add realistic async delay
 
       if (result.success && result.entries.length > 0) {
@@ -79,7 +104,7 @@ export default function GeneratePage() {
         const entriesWithJoins: TimetableEntry[] = result.entries.map((entry, index) => ({
           ...entry,
           id: `gen-entry-${index}-${Date.now()}`,
-          timetable_id: `tt-${divisionId}-draft`,
+          timetable_id: `tt-${division.id}-draft`,
           is_locked: entry.entry_type === 'practical',
           subject: MOCK_SUBJECTS.find((s) => s.id === entry.subject_id),
           faculty: MOCK_FACULTY.find((f) => f.id === entry.faculty_id),
@@ -153,9 +178,12 @@ export default function GeneratePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <Dropdown
               label="Academic Department"
-              value={departmentId}
-              onChange={(e) => setDepartmentId(e.target.value)}
-              options={MOCK_DEPARTMENTS.map((d) => ({
+              value={activeDept?.id ?? ''}
+              onChange={(e) => {
+                setDepartmentId(e.target.value);
+                setDivisionId('');
+              }}
+              options={departments.map((d) => ({
                 label: `${d.name} (${d.code})`,
                 value: d.id,
               }))}
@@ -163,9 +191,9 @@ export default function GeneratePage() {
 
             <Dropdown
               label="Target Class Division"
-              value={divisionId}
+              value={activeDivision?.id ?? ''}
               onChange={(e) => setDivisionId(e.target.value)}
-              options={MOCK_DIVISIONS.map((div) => ({
+              options={deptDivisions.map((div) => ({
                 label: `${div.name} • Sem ${div.semester} (${div.strength} Students)`,
                 value: div.id,
               }))}
@@ -191,10 +219,15 @@ export default function GeneratePage() {
               variant="warning"
               size="lg"
               loading={generating}
+              disabled={!activeDivision}
               onClick={handleGenerate}
               icon={<Sparkles className="w-5 h-5 stroke-[2.5]" />}
             >
-              {generating ? 'Optimizing Schedule...' : 'Generate 0-Clash Timetable'}
+              {generating
+                ? 'Optimizing Schedule...'
+                : activeDivision
+                  ? 'Generate 0-Clash Timetable'
+                  : 'Add a division first'}
             </Button>
           </div>
         </Card>
@@ -280,9 +313,7 @@ export default function GeneratePage() {
               entries={generatedEntries}
               clashes={clashes}
               editable={true}
-              title={`Generated Preview: ${
-                MOCK_DIVISIONS.find((d) => d.id === divisionId)?.name || 'Division'
-              }`}
+              title={`Generated Preview: ${activeDivision?.name || 'Division'}`}
               subtitle={`Academic Year: ${academicYear} • Mon to Fri Schedule`}
             />
           </div>

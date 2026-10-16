@@ -16,6 +16,33 @@ import {
 
 export { DAYS, SLOTS };
 
+// ── Department Heads ──
+// One head per branch, so every department in the matrix has a named owner.
+const HOD_SEED: [string, string, string, string][] = [
+  // [department_id, name, initials, email]
+  ['dept-it', 'Dr. Sunita Deshmukh', 'SD', 'hod.it@campus.edu'],
+  ['dept-extc', 'Dr. Vikram Rane', 'VR', 'hod.extc@campus.edu'],
+  ['dept-aids', 'Dr. Meera Iyer', 'MI', 'hod.aids@campus.edu'],
+  ['dept-mech', 'Dr. Anil Deshpande', 'AD', 'hod.mech@campus.edu'],
+  ['dept-civil', 'Dr. Kavita Joshi', 'KJ', 'hod.civil@campus.edu'],
+  ['dept-elec', 'Dr. Sanjay Bhosale', 'SB', 'hod.elec@campus.edu'],
+  ['dept-inst', 'Dr. Nisha Kulkarni', 'NK', 'hod.inst@campus.edu'],
+];
+
+const HOD_USERS: User[] = HOD_SEED.map(
+  ([department_id, name, faculty_initial, email]) => ({
+    id: `user-hod-${department_id.replace('dept-', '')}`,
+    name,
+    email,
+    role: 'hod' as const,
+    department_id,
+    division_id: null,
+    faculty_initial,
+    must_change_password: false,
+    created_at: '2026-01-01T00:00:00Z',
+  })
+);
+
 // ── Demo Users ──
 export const MOCK_USERS: User[] = [
   {
@@ -62,6 +89,7 @@ export const MOCK_USERS: User[] = [
     must_change_password: false,
     created_at: '2026-01-01T00:00:00Z',
   },
+  ...HOD_USERS,
 ];
 
 // ── Departments ──
@@ -77,57 +105,98 @@ export const MOCK_DEPARTMENTS: Department[] = [
     id: 'dept-it',
     name: 'Information Technology',
     code: 'IT',
-    hod_id: null,
+    hod_id: 'user-hod-it',
     created_at: '2026-01-01T00:00:00Z',
   },
   {
     id: 'dept-extc',
     name: 'Electronics & Telecommunication',
     code: 'EXTC',
-    hod_id: null,
+    hod_id: 'user-hod-extc',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'dept-aids',
+    name: 'Artificial Intelligence & Data Science',
+    code: 'AIDS',
+    hod_id: 'user-hod-aids',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'dept-mech',
+    name: 'Mechanical Engineering',
+    code: 'MECH',
+    hod_id: 'user-hod-mech',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'dept-civil',
+    name: 'Civil Engineering',
+    code: 'CIVIL',
+    hod_id: 'user-hod-civil',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'dept-elec',
+    name: 'Electrical Engineering',
+    code: 'ELEC',
+    hod_id: 'user-hod-elec',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'dept-inst',
+    name: 'Instrumentation & Control Engineering',
+    code: 'INST',
+    hod_id: 'user-hod-inst',
     created_at: '2026-01-01T00:00:00Z',
   },
 ];
 
 // ── Divisions ──
-export const MOCK_DIVISIONS: Division[] = [
-  {
-    id: 'div-se-a',
-    name: 'SE-A (CMPN)',
-    department_id: 'dept-cmpn',
-    class_teacher_id: 'user-teach-1',
-    semester: 4,
-    strength: 65,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'div-se-b',
-    name: 'SE-B (CMPN)',
-    department_id: 'dept-cmpn',
-    class_teacher_id: null,
-    semester: 4,
-    strength: 60,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'div-te-a',
-    name: 'TE-A (IT)',
-    department_id: 'dept-it',
-    class_teacher_id: null,
-    semester: 6,
-    strength: 70,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'div-be-extc',
-    name: 'BE (EXTC)',
-    department_id: 'dept-extc',
-    class_teacher_id: null,
-    semester: 8,
-    strength: 55,
-    created_at: '2026-01-01T00:00:00Z',
-  },
+// Every branch runs its own year-wise classes, so the matrix ships several
+// divisions per department instead of one token class each.
+const DIVISION_SEED: [string, string, string, number, number][] = [
+  // [id, name, department_id, semester, strength]
+  ['div-se-a', 'SE-A (CMPN)', 'dept-cmpn', 4, 65],
+  ['div-se-b', 'SE-B (CMPN)', 'dept-cmpn', 4, 60],
+  ['div-cmpn-te-a', 'TE-A (CMPN)', 'dept-cmpn', 6, 68],
+  ['div-cmpn-te-b', 'TE-B (CMPN)', 'dept-cmpn', 6, 62],
+  ['div-cmpn-be-a', 'BE-A (CMPN)', 'dept-cmpn', 8, 58],
+  ['div-it-se-a', 'SE-A (IT)', 'dept-it', 4, 70],
+  ['div-te-a', 'TE-A (IT)', 'dept-it', 6, 66],
+  ['div-it-be-a', 'BE-A (IT)', 'dept-it', 8, 60],
+  ['div-extc-se-a', 'SE-A (EXTC)', 'dept-extc', 4, 72],
+  ['div-extc-te-a', 'TE-A (EXTC)', 'dept-extc', 6, 64],
+  ['div-be-extc', 'BE (EXTC)', 'dept-extc', 8, 55],
+  ['div-aids-se-a', 'SE-A (AIDS)', 'dept-aids', 4, 68],
+  ['div-aids-te-a', 'TE-A (AIDS)', 'dept-aids', 6, 63],
+  ['div-mech-se-a', 'SE-A (MECH)', 'dept-mech', 4, 66],
+  ['div-mech-te-a', 'TE-A (MECH)', 'dept-mech', 6, 61],
+  ['div-mech-be-a', 'BE-A (MECH)', 'dept-mech', 8, 57],
+  ['div-civil-se-a', 'SE-A (CIVIL)', 'dept-civil', 4, 64],
+  ['div-civil-be-a', 'BE (CIVIL)', 'dept-civil', 8, 52],
+  ['div-elec-se-a', 'SE-A (ELEC)', 'dept-elec', 4, 62],
+  ['div-elec-te-a', 'TE-A (ELEC)', 'dept-elec', 6, 59],
+  ['div-inst-se-a', 'SE-A (INST)', 'dept-inst', 4, 60],
+  ['div-inst-be-a', 'BE (INST)', 'dept-inst', 8, 50],
 ];
+
+/** Divisions that already have a named class teacher in the seeded data. */
+const DIVISION_CLASS_TEACHERS: Record<string, string> = {
+  'div-se-a': 'user-teach-1',
+};
+
+export const MOCK_DIVISIONS: Division[] = DIVISION_SEED.map(
+  ([id, name, department_id, semester, strength]) => ({
+    id,
+    name,
+    department_id,
+    class_teacher_id: DIVISION_CLASS_TEACHERS[id] ?? null,
+    semester,
+    strength,
+    created_at: '2026-01-01T00:00:00Z',
+  })
+);
 
 // ── Subjects ──
 export const MOCK_SUBJECTS: Subject[] = [

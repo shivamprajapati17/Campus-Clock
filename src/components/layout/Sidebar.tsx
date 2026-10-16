@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import { cn, clearDemoSession } from '@/lib/utils';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { Badge } from '@/components/ui/Badge';
 import { InstitutionLogos } from '@/components/layout/InstitutionLogos';
 import {
@@ -28,11 +29,24 @@ export function Sidebar() {
   const router = useRouter();
   const { user, clearUser, sidebarOpen, toggleSidebar } = useStore();
 
-  const handleLogout = () => {
-    // Clear the demo session and zustand state
+  const handleLogout = async () => {
+    // Clear the local persona cookie and zustand state first, so the UI signs
+    // out instantly even if the network is unavailable.
     clearDemoSession();
     clearUser();
+
+    // Also drop the real Supabase session — otherwise the middleware would keep
+    // letting the browser back into /dashboard after "signing out".
+    if (isSupabaseConfigured()) {
+      try {
+        await createClient().auth.signOut();
+      } catch (err) {
+        console.warn('[campus-clock] sign-out could not reach Supabase', err);
+      }
+    }
+
     router.push('/login');
+    router.refresh();
   };
 
   const role = user?.role || 'student';
@@ -64,11 +78,11 @@ export function Sidebar() {
       roles: ['management', 'hod'],
     },
     {
-      label: 'Master View',
+      label: 'Master Data',
       href: '/dashboard/master',
       icon: <Layers className="w-5 h-5 stroke-[2.2]" />,
-      roles: ['management'],
-      badge: 'All Depts',
+      roles: ['management', 'hod'],
+      badge: 'Editable',
     },
     {
       label: 'Free Faculty',
@@ -92,7 +106,7 @@ export function Sidebar() {
       label: 'Manage Users',
       href: '/dashboard/users',
       icon: <Users className="w-5 h-5 stroke-[2.2]" />,
-      roles: ['management'],
+      roles: ['management', 'hod'],
     },
     {
       label: 'My Profile',

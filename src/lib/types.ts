@@ -16,6 +16,12 @@ export interface User {
   faculty_initial: string | null;
   must_change_password: boolean;
   created_at: string;
+  /**
+   * Branch short code (e.g. "CMPN"). Supabase accounts store their department
+   * as a database UUID, while the master matrix uses internal ids — the code is
+   * what lets an HOD be matched to their branch in both worlds.
+   */
+  department_code?: string | null;
 }
 
 /** Academic department */

@@ -5,7 +5,14 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { DAYS, SLOTS, SUBJECT_COLORS, ROLE_COLORS, type UserRole } from '@/lib/types';
+import {
+  DAYS,
+  SLOTS,
+  SUBJECT_COLORS,
+  ROLE_COLORS,
+  type Department,
+  type UserRole,
+} from '@/lib/types';
 
 /**
  * Merge Tailwind classes intelligently (handles conflicts).
@@ -81,6 +88,32 @@ export function getSubjectColor(index: number): string {
  */
 export function getRoleColor(role: UserRole): string {
   return ROLE_COLORS[role] ?? '#868E96';
+}
+
+/**
+ * Match a signed-in user to a department in the master matrix.
+ *
+ * Accounts created through Supabase carry the department as a database UUID,
+ * which never equals the matrix's own id — so fall back to the branch short
+ * code before giving up.
+ */
+export function resolveDepartmentId(
+  departments: Department[],
+  departmentId: string | null | undefined,
+  departmentCode: string | null | undefined
+): string | null {
+  if (departmentId && departments.some((d) => d.id === departmentId)) {
+    return departmentId;
+  }
+
+  if (departmentCode) {
+    const byCode = departments.find(
+      (d) => d.code.toLowerCase() === departmentCode.toLowerCase()
+    );
+    if (byCode) return byCode.id;
+  }
+
+  return departmentId ?? null;
 }
 
 /**

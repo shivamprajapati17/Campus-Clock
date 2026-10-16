@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -8,64 +8,184 @@ import { Input } from '@/components/ui/Input';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
-import {
-  MOCK_USERS,
-  MOCK_DEPARTMENTS,
-  MOCK_DIVISIONS,
-} from '@/lib/data/mockData';
+import { useStore } from '@/store/useStore';
+import { useMasterData } from '@/store/useMasterData';
+import { resolveDepartmentId } from '@/lib/utils';
 import type { User, UserRole } from '@/lib/types';
 import {
   UserPlus,
   Trash2,
-  Edit,
-  Shield,
+  Edit3,
   Search,
-  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 
+/** Roles Management may hand out. */
+const MANAGEMENT_ROLE_OPTIONS = [
+  { label: 'HOD (Head of Department)', value: 'hod' },
+  { label: 'Class Teacher / Faculty', value: 'teacher' },
+  { label: 'Student (Read-Only)', value: 'student' },
+  { label: 'Management (Dean / Admin)', value: 'management' },
+];
+
+/** HODs may only provision staff and students inside their own branch. */
+const HOD_ROLE_OPTIONS = [
+  { label: 'Class Teacher / Faculty', value: 'teacher' },
+  { label: 'Student (Read-Only)', value: 'student' },
+];
+
+const EMPTY_FORM = {
+  name: '',
+  email: '',
+  role: 'teacher' as UserRole,
+  deptId: '',
+  divisionId: '',
+  initials: '',
+};
+
 export default function UserManagementPage() {
-  const [users, setUsers] = useState<User[]>(MOCK_USERS);
+  const { user } = useStore();
+  const role = user?.role;
+  const isManagement = role === 'management';
+
+  const directoryUsers = useMasterData((s) => s.directoryUsers);
+  const departments = useMasterData((s) => s.departments);
+  const divisions = useMasterData((s) => s.divisions);
+  const addDirectoryUser = useMasterData((s) => s.addDirectoryUser);
+  const updateDirectoryUser = useMasterData((s) => s.updateDirectoryUser);
+  const deleteDirectoryUser = useMasterData((s) => s.deleteDirectoryUser);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [formError, setFormError] = useState('');
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [pendingDelete, setPendingDelete] = useState<User | null>(null);
 
-  // New user form state
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>('teacher');
-  const [deptId, setDeptId] = useState(MOCK_DEPARTMENTS[0].id);
-  const [divId, setDivId] = useState(MOCK_DIVISIONS[0].id);
-  const [initials, setInitials] = useState('');
+  const roleOptions = isManagement ? MANAGEMENT_ROLE_OPTIONS : HOD_ROLE_OPTIONS;
 
-  const handleCreateUser = (e: React.FormEvent) => {
+  const scopeDepartmentId = isManagement
+    ? null
+    : resolveDepartmentId(
+        departments,
+        user?.department_id,
+        user?.department_code
+      );
+
+  // Departments an operator may assign from.
+  const assignableDepartments = useMemo(
+    () =>
+      scopeDepartmentId
+        ? departments.filter((d) => d.id === scopeDepartmentId)
+        : departments,
+    [departments, scopeDepartmentId]
+  );
+
+  // The visible directory: HODs only see their own branch.
+  const scopedUsers = useMemo(() => {
+    if (!scopeDepartmentId) return directoryUsers;
+    return directoryUsers.filter((u) => u.department_id === scopeDepartmentId);
+  }, [directoryUsers, scopeDepartmentId]);
+
+  const divisionsForDept = useMemo(() => {
+    const deptId = form.deptId || assignableDepartments[0]?.id || '';
+    return divisions.filter((d) => d.department_id === deptId);
+  }, [divisions, form.deptId, assignableDepartments]);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormError('');
+    setForm({
+      ...EMPTY_FORM,
+      role: isManagement ? 'teacher' : 'teacher',
+      deptId: assignableDepartments[0]?.id ?? '',
+      divisionId:
+        divisions.find((d) => d.department_id === assignableDepartments[0]?.id)
+          ?.id ?? '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (target: User) => {
+    setEditingId(target.id);
+    setFormError('');
+    setForm({
+      name: target.name,
+      email: target.email,
+      role: target.role,
+      deptId: target.department_id ?? '',
+      divisionId: target.division_id ?? '',
+      initials: target.faculty_initial ?? '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email) return;
 
-    const newUser: User = {
-      id: `user-${Date.now()}`,
+    const name = form.name.trim();
+    const email = form.email.trim().toLowerCase();
+
+    if (!name) return setFormError('Full name is required.');
+    if (!email) return setFormError('Institutional email is required.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setFormError('Enter a valid email address.');
+    }
+
+    const duplicate = directoryUsers.some(
+      (u) => u.email.toLowerCase() === email && u.id !== editingId
+    );
+    if (duplicate) return setFormError('That email is already in the directory.');
+
+    if (!isManagement && !scopeDepartmentId) {
+      return setFormError(
+        'Your account is not linked to a department, so you cannot provision users.'
+      );
+    }
+    if (!isManagement && form.role === 'management') {
+      return setFormError('Only Management can grant Management access.');
+    }
+
+    const needsDepartment = form.role !== 'management';
+    const needsDivision =
+      form.role === 'teacher' || form.role === 'student';
+
+    const departmentId = needsDepartment
+      ? form.deptId || assignableDepartments[0]?.id || null
+      : null;
+
+    if (needsDepartment && !departmentId) {
+      return setFormError('Select a department for this user.');
+    }
+
+    const payload = {
       name,
       email,
-      role,
-      department_id: role === 'management' ? null : deptId,
-      division_id: role === 'student' || role === 'teacher' ? divId : null,
-      faculty_initial: role === 'teacher' || role === 'hod' ? initials || name.slice(0, 2).toUpperCase() : null,
-      must_change_password: true,
-      created_at: new Date().toISOString(),
+      role: form.role,
+      department_id: departmentId,
+      division_id: needsDivision ? form.divisionId || null : null,
+      faculty_initial:
+        form.role === 'teacher' || form.role === 'hod'
+          ? (form.initials.trim() || name.slice(0, 2)).toUpperCase()
+          : null,
     };
 
-    setUsers((prev) => [newUser, ...prev]);
+    if (editingId) {
+      updateDirectoryUser(editingId, payload);
+    } else {
+      addDirectoryUser({
+        id: `user-${Date.now().toString(36)}`,
+        ...payload,
+        must_change_password: true,
+        created_at: new Date().toISOString(),
+      });
+    }
+
     setIsModalOpen(false);
-
-    // Reset fields
-    setName('');
-    setEmail('');
-    setInitials('');
+    setFormError('');
   };
 
-  const handleDeleteUser = (id: string) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-  };
-
-  const filteredUsers = users.filter((u) => {
+  const filteredUsers = scopedUsers.filter((u) => {
     const q = searchTerm.toLowerCase();
     return (
       u.name.toLowerCase().includes(q) ||
@@ -74,8 +194,16 @@ export default function UserManagementPage() {
     );
   });
 
+  const deptNameOf = (deptId: string | null) => {
+    const dept = departments.find((d) => d.id === deptId);
+    return dept ? `${dept.name} (${dept.code})` : 'All Departments';
+  };
+
+  const divNameOf = (divId: string | null) =>
+    divisions.find((d) => d.id === divId)?.name ?? null;
+
   return (
-    <ProtectedRoute roles={['management']}>
+    <ProtectedRoute roles={['management', 'hod']}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-3 border-black">
@@ -92,13 +220,15 @@ export default function UserManagementPage() {
               User & Permissions Management
             </h1>
             <p className="text-xs md:text-sm font-bold text-black/70">
-              Provision accounts for HODs, faculty members, and students with role-level access control.
+              {isManagement
+                ? 'Provision accounts for HODs, faculty members and students with role-level access control.'
+                : 'Manage the faculty and students enrolled in your department.'}
             </p>
           </div>
 
           <Button
             variant="warning"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openCreate}
             icon={<UserPlus className="w-5 h-5 stroke-[2.5]" />}
           >
             Provision User
@@ -106,7 +236,7 @@ export default function UserManagementPage() {
         </div>
 
         {/* Search Bar */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="relative w-full max-w-md">
             <input
               type="text"
@@ -119,14 +249,15 @@ export default function UserManagementPage() {
           </div>
 
           <span className="text-xs font-black uppercase text-black/60">
-            Total Enrolled: {filteredUsers.length} Users
+            {isManagement ? 'Total Enrolled' : 'In Your Department'}:{' '}
+            {filteredUsers.length} Users
           </span>
         </div>
 
         {/* Users Table */}
         <Card className="p-0 bg-white overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[640px]">
+            <table className="w-full text-left border-collapse min-w-[720px]">
               <thead>
                 <tr className="border-b-3 border-black bg-[#FFE66D]">
                   <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black">
@@ -139,7 +270,10 @@ export default function UserManagementPage() {
                     Department
                   </th>
                   <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black">
-                    Faculty Initials
+                    Division
+                  </th>
+                  <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black">
+                    Initials
                   </th>
                   <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black text-right">
                     Actions
@@ -147,10 +281,19 @@ export default function UserManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-black/10">
+                {filteredUsers.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="p-8 text-center text-xs font-bold text-black/50"
+                    >
+                      No users match this search.
+                    </td>
+                  </tr>
+                )}
+
                 {filteredUsers.map((u) => {
-                  const dept = MOCK_DEPARTMENTS.find(
-                    (d) => d.id === u.department_id
-                  );
+                  const divName = divNameOf(u.division_id);
 
                   return (
                     <tr key={u.id} className="hover:bg-[#FFF9F1] transition-colors">
@@ -170,7 +313,11 @@ export default function UserManagementPage() {
                       </td>
 
                       <td className="p-3.5 text-xs font-bold text-black/80">
-                        {dept ? `${dept.name} (${dept.code})` : 'All Departments'}
+                        {deptNameOf(u.department_id)}
+                      </td>
+
+                      <td className="p-3.5 text-xs font-bold text-black/80">
+                        {divName ?? '—'}
                       </td>
 
                       <td className="p-3.5">
@@ -183,14 +330,26 @@ export default function UserManagementPage() {
                         )}
                       </td>
 
-                      <td className="p-3.5 text-right">
-                        <button
-                          onClick={() => handleDeleteUser(u.id)}
-                          className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FF6B70] hover:text-white transition-colors cursor-pointer"
-                          title="Delete User"
-                        >
-                          <Trash2 className="w-4 h-4 stroke-[2.2]" />
-                        </button>
+                      <td className="p-3.5">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openEdit(u)}
+                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FFE66D] transition-colors cursor-pointer"
+                            title="Edit user"
+                            aria-label={`Edit ${u.name}`}
+                          >
+                            <Edit3 className="w-4 h-4 stroke-[2.2]" />
+                          </button>
+
+                          <button
+                            onClick={() => setPendingDelete(u)}
+                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FF6B70] hover:text-white transition-colors cursor-pointer"
+                            title="Delete user"
+                            aria-label={`Delete ${u.name}`}
+                          >
+                            <Trash2 className="w-4 h-4 stroke-[2.2]" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -200,18 +359,18 @@ export default function UserManagementPage() {
           </div>
         </Card>
 
-        {/* Provision User Modal */}
+        {/* Provision / Edit User Modal */}
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Provision New Campus User"
+          title={editingId ? 'Edit Campus User' : 'Provision New Campus User'}
         >
-          <form onSubmit={handleCreateUser} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Full Name"
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Dr. Priya Sharma"
             />
 
@@ -219,55 +378,71 @@ export default function UserManagementPage() {
               label="Institutional Email"
               type="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               placeholder="e.g. priya.sharma@campus.edu"
             />
 
             <Dropdown
               label="System Role"
-              value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
-              options={[
-                { label: 'HOD (Head of Department)', value: 'hod' },
-                { label: 'Class Teacher / Faculty', value: 'teacher' },
-                { label: 'Student (Read-Only)', value: 'student' },
-                { label: 'Management (Dean / Admin)', value: 'management' },
-              ]}
+              value={form.role}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, role: e.target.value as UserRole }))
+              }
+              options={roleOptions}
             />
 
-            {role !== 'management' && (
+            {form.role !== 'management' && (
               <Dropdown
                 label="Department Assignment"
-                value={deptId}
-                onChange={(e) => setDeptId(e.target.value)}
-                options={MOCK_DEPARTMENTS.map((d) => ({
+                value={form.deptId || assignableDepartments[0]?.id || ''}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    deptId: e.target.value,
+                    divisionId: '',
+                  }))
+                }
+                options={assignableDepartments.map((d) => ({
                   label: `${d.name} (${d.code})`,
                   value: d.id,
                 }))}
               />
             )}
 
-            {(role === 'teacher' || role === 'hod') && (
+            {(form.role === 'teacher' || form.role === 'hod') && (
               <Input
                 label="Faculty Code / Initials"
-                value={initials}
-                onChange={(e) => setInitials(e.target.value)}
+                value={form.initials}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, initials: e.target.value }))
+                }
                 placeholder="e.g. PS"
                 maxLength={4}
               />
             )}
 
-            {(role === 'student' || role === 'teacher') && (
+            {(form.role === 'student' || form.role === 'teacher') && (
               <Dropdown
                 label="Class Division"
-                value={divId}
-                onChange={(e) => setDivId(e.target.value)}
-                options={MOCK_DIVISIONS.map((div) => ({
-                  label: div.name,
-                  value: div.id,
-                }))}
+                value={form.divisionId}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, divisionId: e.target.value }))
+                }
+                options={[
+                  { label: 'Not assigned', value: '' },
+                  ...divisionsForDept.map((div) => ({
+                    label: `${div.name} • Sem ${div.semester}`,
+                    value: div.id,
+                  })),
+                ]}
               />
+            )}
+
+            {formError && (
+              <div className="p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
+                {formError}
+              </div>
             )}
 
             <div className="pt-4 border-t-2 border-black/10 flex justify-end gap-3">
@@ -279,13 +454,49 @@ export default function UserManagementPage() {
                 Cancel
               </Button>
               <Button type="submit" variant="warning">
-                Save & Grant Access
+                {editingId ? 'Save Changes' : 'Save & Grant Access'}
               </Button>
             </div>
           </form>
+        </Modal>
+
+        {/* Delete Confirmation */}
+        <Modal
+          isOpen={pendingDelete !== null}
+          onClose={() => setPendingDelete(null)}
+          title="Remove Campus User"
+          size="sm"
+        >
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#FF6B70] border-2 border-black flex items-center justify-center text-white">
+                <AlertTriangle className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <p className="text-sm font-bold text-black/80">
+                Remove{' '}
+                <span className="font-black">{pendingDelete?.name}</span> from
+                the campus directory? They will lose portal access immediately.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t-2 border-black/10 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setPendingDelete(null)}>
+                Keep user
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (pendingDelete) deleteDirectoryUser(pendingDelete.id);
+                  setPendingDelete(null);
+                }}
+                icon={<Trash2 className="w-4 h-4" />}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
         </Modal>
       </div>
     </ProtectedRoute>
   );
 }
-

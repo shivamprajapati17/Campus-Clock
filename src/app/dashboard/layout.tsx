@@ -5,9 +5,11 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { useStore } from '@/store/useStore';
+import { useMasterData } from '@/store/useMasterData';
 import { MOCK_USERS, MOCK_NOTIFICATIONS } from '@/lib/data/mockData';
 import { Loader } from '@/components/ui/Loader';
 import { readDemoSession, writeDemoSession } from '@/lib/utils';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 import type { User } from '@/lib/types';
 
 /**
@@ -32,13 +34,20 @@ export default function DashboardLayout({
   );
 
   useEffect(() => {
-    // Restore the demo persona from the cookie, or default to the Dean persona
-    // so reviewers can explore every role without a real sign-in.
+    // Pick up any department / division edits saved on this device before the
+    // portal renders, so counts and dropdowns show the operator's own data.
+    useMasterData.getState().hydrate();
+
+    // Restore the persona this browser already signed in as.
     if (!user) {
       const stored = readDemoSession<User>();
       if (stored) {
         setUser(stored);
-      } else {
+      } else if (!isSupabaseConfigured()) {
+        // Only when no Supabase project is configured (a bare local preview) do
+        // we fall back to the Dean persona, so the portal stays explorable.
+        // With real auth configured this must never run: re-creating a persona
+        // here would silently sign a user straight back in after they log out.
         setUser(MOCK_USERS[0]);
         writeDemoSession(MOCK_USERS[0]);
       }
