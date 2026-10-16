@@ -42,15 +42,18 @@ Campus Clock features a bold, human-designed **Neubrutalism** visual aesthetic:
 
 | Design Token | Value | Visual Purpose |
 |---|---|---|
-| **Background** | `#FDF6EC` | Warm retro paper-like backdrop |
-| **Primary** | `#FF5D5D` | High-impact action / Management red |
-| **Secondary** | `#A78BFA` | HOD council lavender |
-| **Accent** | `#2DD4BF` | Teacher teal / success validation |
-| **Highlight** | `#FFD93D` | Student yellow / CTA buttons |
-| **Blue / Orange** | `#5CB8FF` / `#FF8A5C` | Subject cards & lecture differentiation |
-| **Border** | `3px solid #000000` | Unapologetic thick comic-style borders |
-| **Shadow** | `4px 4px 0 #000000` | Hard contrast drop-shadows (no blur) |
-| **Lunch Break** | Diagonal Striped | `#FFD93D` & `#FFFBEB` barber-pole break row |
+| **Background** | `#FFF5EB` | Warm cream paper-like backdrop |
+| **Primary** | `#FF6B70` | High-impact coral / Management |
+| **Secondary** | `#A78BFA` | Lavender purple / HOD council |
+| **Accent** | `#42D1C3` | Turquoise / Teacher & success validation |
+| **Highlight** | `#FFE66D` | Butter yellow / Student & CTAs |
+| **Peach** | `#FFA477` | Supporting accent / lecture differentiation |
+| **Ink** | `#171717` | Warm near-black text & borders |
+| **Muted** | `#777777` | Secondary text |
+| **Border** | `3px solid #171717` | Unapologetic thick comic-style borders |
+| **Shadow** | `4px 4px 0 #171717` | Hard offset shadows, never blurred |
+| **Type** | `Poppins` | Bold/extra-bold headings, medium body |
+| **Lunch Break** | Diagonal Striped | `#FFE66D` & `#FFFDF5` barber-pole break row |
 
 ---
 
@@ -99,7 +102,7 @@ The login screen includes instant 1-click autofill buttons for all 4 roles:
    └───────────────────────────┘ └───────────────────────────┘
 ```
 
-- **Frontend**: Next.js 14, React, Tailwind CSS, Lucide Icons, Canvas Confetti
+- **Frontend**: Next.js 16, React 19, Tailwind CSS v4 (via `@tailwindcss/postcss`), Poppins, Lucide Icons, Canvas Confetti
 - **State**: Zustand Store (`src/store/useStore.ts`)
 - **Generator**: Custom constraint-satisfaction backtracking engine (`src/lib/generator/engine.ts`)
 - **Validator**: Live collision checker (`src/lib/generator/validator.ts`)
@@ -142,11 +145,12 @@ npm install
 ```
 
 ### 3. Environment Variables (Optional for Supabase)
-Create `.env.local` (Campus Clock includes built-in fallback mock data out of the box):
+Copy `.env.example` to `.env.local` (Campus Clock includes a built-in fallback mock-data layer, so it also runs without Supabase):
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
+To provision the database, run [`supabase/schema.sql`](supabase/schema.sql) in the Supabase SQL editor — it creates the `profiles`, `departments`, `divisions`, `subjects`, `rooms`, `faculty`, `timetables`, `timetable_entries`, `chat_messages` and `notifications` tables with row-level security.
 
 ### 4. Run Development Server
 ```bash

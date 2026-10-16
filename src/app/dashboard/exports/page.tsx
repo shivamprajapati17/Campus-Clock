@@ -148,8 +148,8 @@ function ExportCenterContent() {
                   onClick={() => setFormat('pdf')}
                   className={`p-3.5 rounded-xl border-2 border-black flex flex-col items-center gap-1.5 transition-all cursor-pointer font-black text-xs uppercase ${
                     format === 'pdf'
-                      ? 'bg-[#FF5D5D] text-white nb-shadow-sm -translate-y-0.5'
-                      : 'bg-[#FDF6EC] text-black hover:bg-white'
+                      ? 'bg-[#FF6B70] text-white nb-shadow-sm -translate-y-0.5'
+                      : 'bg-[#FFF5EB] text-black hover:bg-white'
                   }`}
                 >
                   <FileText className="w-5 h-5 stroke-[2.2]" />
@@ -161,8 +161,8 @@ function ExportCenterContent() {
                   onClick={() => setFormat('excel')}
                   className={`p-3.5 rounded-xl border-2 border-black flex flex-col items-center gap-1.5 transition-all cursor-pointer font-black text-xs uppercase ${
                     format === 'excel'
-                      ? 'bg-[#2DD4BF] text-black nb-shadow-sm -translate-y-0.5'
-                      : 'bg-[#FDF6EC] text-black hover:bg-white'
+                      ? 'bg-[#42D1C3] text-black nb-shadow-sm -translate-y-0.5'
+                      : 'bg-[#FFF5EB] text-black hover:bg-white'
                   }`}
                 >
                   <FileSpreadsheet className="w-5 h-5 stroke-[2.2]" />
@@ -174,8 +174,8 @@ function ExportCenterContent() {
                   onClick={() => setFormat('json')}
                   className={`p-3.5 rounded-xl border-2 border-black flex flex-col items-center gap-1.5 transition-all cursor-pointer font-black text-xs uppercase ${
                     format === 'json'
-                      ? 'bg-[#FFD93D] text-black nb-shadow-sm -translate-y-0.5'
-                      : 'bg-[#FDF6EC] text-black hover:bg-white'
+                      ? 'bg-[#FFE66D] text-black nb-shadow-sm -translate-y-0.5'
+                      : 'bg-[#FFF5EB] text-black hover:bg-white'
                   }`}
                 >
                   <FileDown className="w-5 h-5 stroke-[2.2]" />
@@ -208,8 +208,8 @@ function ExportCenterContent() {
               </span>
             </div>
 
-            <div className="p-6 rounded-xl border-2 border-dashed border-black/30 bg-[#FFFBEB] text-center space-y-3">
-              <div className="w-16 h-16 rounded-2xl bg-[#FFD93D] border-2 border-black nb-shadow flex items-center justify-center mx-auto text-black">
+            <div className="p-6 rounded-xl border-2 border-dashed border-black/30 bg-[#FFF9F1] text-center space-y-3">
+              <div className="w-16 h-16 rounded-2xl bg-[#FFE66D] border-2 border-black nb-shadow flex items-center justify-center mx-auto text-black">
                 {format === 'pdf' ? (
                   <FileText className="w-8 h-8" />
                 ) : format === 'excel' ? (

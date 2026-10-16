@@ -131,7 +131,7 @@ export default function EditorPage({
           <div className="flex items-center gap-3">
             <Link
               href={`/dashboard/timetable/${timetable.id}`}
-              className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FDF6EC] nb-shadow-sm text-black"
+              className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FFF5EB] nb-shadow-sm text-black"
             >
               <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
             </Link>
@@ -184,7 +184,7 @@ export default function EditorPage({
         {/* Clash Status Banner */}
         <div
           className={`p-4 rounded-2xl border-3 border-black nb-shadow flex items-center justify-between gap-4 ${
-            clashes.length === 0 ? 'bg-[#2DD4BF]' : 'bg-[#FF5D5D] text-white'
+            clashes.length === 0 ? 'bg-[#42D1C3]' : 'bg-[#FF6B70] text-white'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export default function EditorPage({
               {clashes.length === 0 ? (
                 <CheckCircle2 className="w-6 h-6 text-green-700" />
               ) : (
-                <AlertTriangle className="w-6 h-6 text-[#FF5D5D]" />
+                <AlertTriangle className="w-6 h-6 text-[#FF6B70]" />
               )}
             </div>
             <div>

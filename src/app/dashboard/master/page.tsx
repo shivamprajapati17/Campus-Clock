@@ -86,7 +86,7 @@ export default function MasterViewPage() {
             </p>
           </Card>
 
-          <Card className="p-5 bg-[#2DD4BF]">
+          <Card className="p-5 bg-[#42D1C3]">
             <span className="text-xs font-black uppercase text-black/80">
               Campus Divisions
             </span>
@@ -98,7 +98,7 @@ export default function MasterViewPage() {
             </p>
           </Card>
 
-          <Card className="p-5 bg-[#FFD93D]">
+          <Card className="p-5 bg-[#FFE66D]">
             <span className="text-xs font-black uppercase text-black/80">
               Compliance Status
             </span>
@@ -138,7 +138,7 @@ export default function MasterViewPage() {
               return (
                 <div
                   key={div.id}
-                  className="p-5 rounded-2xl border-3 border-black bg-[#FDF6EC] nb-shadow-sm flex flex-col justify-between"
+                  className="p-5 rounded-2xl border-3 border-black bg-[#FFF5EB] nb-shadow-sm flex flex-col justify-between"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>

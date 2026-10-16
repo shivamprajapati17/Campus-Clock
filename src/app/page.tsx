@@ -16,14 +16,14 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#FDF6EC] text-black selection:bg-[#FFD93D] selection:text-black">
+    <div className="min-h-screen bg-[#FFF5EB] text-black selection:bg-[#FFE66D] selection:text-black">
       {/* ── Top Announcement Bar ── */}
-      <div className="bg-[#FFD93D] border-b-3 border-black py-2 px-4 text-center text-xs md:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 flex-wrap">
+      <div className="bg-[#FFE66D] border-b-3 border-black py-2 px-4 text-center text-xs md:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 flex-wrap">
         <span>🎉 Campus Clock SaaS • 0-Clash AI Timetables</span>
         <span className="hidden sm:inline">•</span>
         <Link
           href="/overthinking-engine"
-          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#0B0C10] text-[#00F5FF] text-[11px] font-mono hover:text-white transition-colors border border-black"
+          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#171717] text-[#FFE66D] text-[11px] font-mono hover:bg-[#FF6B70] hover:text-white transition-colors border-2 border-black"
         >
           <span>🧠 Launch "The Overthinking Engine" ↗</span>
         </Link>
@@ -33,21 +33,21 @@ export default function LandingPage() {
       <header className="border-b-3 border-black bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#FF5D5D] border-3 border-black nb-shadow flex items-center justify-center text-white">
+            <div className="w-12 h-12 rounded-2xl bg-[#FF6B70] border-3 border-black nb-shadow flex items-center justify-center text-white">
               <Clock className="w-7 h-7 stroke-[2.5]" />
             </div>
             <div>
               <span className="font-black text-2xl tracking-tighter uppercase block leading-none">
                 Campus Clock
               </span>
-              <span className="text-[11px] font-black uppercase tracking-widest text-[#FF5D5D]">
+              <span className="text-[11px] font-black uppercase tracking-widest text-[#FF6B70]">
                 Buildsaur Track 1 SaaS
               </span>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 font-black text-sm uppercase">
-            <a href="#features" className="hover:text-[#FF5D5D] transition-colors">
+            <a href="#features" className="hover:text-[#FF6B70] transition-colors">
               Features
             </a>
             <a href="#roles" className="hover:text-[#A78BFA] transition-colors">
@@ -55,7 +55,7 @@ export default function LandingPage() {
             </a>
             <Link
               href="/overthinking-engine"
-              className="text-[#9D4EDD] hover:text-[#00F5FF] flex items-center gap-1 font-bold"
+              className="text-[#7C5CF0] hover:text-[#FF6B70] flex items-center gap-1 font-bold"
             >
               <span>Overthinking Engine</span>
             </Link>
@@ -72,13 +72,13 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="nb-btn bg-white hover:bg-[#FDF6EC] text-black text-xs md:text-sm px-4 py-2.5"
+              className="nb-btn bg-white hover:bg-[#FFF5EB] text-black text-xs md:text-sm px-4 py-2.5"
             >
               Sign In
             </Link>
             <Link
               href="/dashboard"
-              className="nb-btn bg-[#FFD93D] hover:bg-[#f3cc20] text-black text-xs md:text-sm px-5 py-2.5 flex items-center gap-2"
+              className="nb-btn bg-[#FFE66D] hover:bg-[#F2D94A] text-black text-xs md:text-sm px-5 py-2.5 flex items-center gap-2"
             >
               <span>Launch App</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -88,18 +88,27 @@ export default function LandingPage() {
       </header>
 
       {/* ── Hero Section ── */}
-      <section className="py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto">
+      <section className="relative py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto">
+        {/* Decorative geometry */}
+        <div className="pointer-events-none absolute top-10 right-8 hidden lg:flex flex-col items-end gap-3" aria-hidden="true">
+          <span className="nb-star" />
+          <span className="nb-dot bg-[#A78BFA]" />
+          <span className="nb-square bg-[#42D1C3]" />
+        </div>
+        <div className="pointer-events-none absolute bottom-16 left-4 hidden lg:block" aria-hidden="true">
+          <span className="nb-square bg-[#FF6B70] rotate-12" />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Copy & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border-3 border-black bg-[#2DD4BF] text-black text-xs font-black uppercase nb-shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border-3 border-black bg-[#42D1C3] text-black text-xs font-black uppercase nb-shadow-sm">
               <Sparkles className="w-4 h-4 stroke-[2.5]" />
               <span>Backtracking Constraint Engine • Zero Clashes Guaranteed</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-black leading-[1.05]">
               Say Goodbye to <br />
-              <span className="bg-[#FF5D5D] text-white px-2 py-0.5 border-3 border-black inline-block -rotate-1 nb-shadow">
+              <span className="bg-[#FF6B70] text-white px-2 py-0.5 border-3 border-black inline-block -rotate-1 nb-shadow">
                 Timetable Chaos
               </span>
             </h1>
@@ -113,7 +122,7 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link
                 href="/dashboard/generate"
-                className="nb-btn bg-[#FFD93D] text-black text-base px-8 py-4 flex items-center gap-3 nb-shadow hover:nb-shadow-lg"
+                className="nb-btn bg-[#FFE66D] text-black text-base px-8 py-4 flex items-center gap-3 nb-shadow hover:nb-shadow-lg"
               >
                 <Zap className="w-5 h-5 fill-black stroke-black" />
                 <span>Auto-Generate Now</span>
@@ -131,7 +140,7 @@ export default function LandingPage() {
             {/* Stat Counters */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t-3 border-black">
               <div className="nb-card bg-white p-3 text-center">
-                <span className="block text-2xl sm:text-3xl font-black text-[#FF5D5D]">
+                <span className="block text-2xl sm:text-3xl font-black text-[#FF6B70]">
                   0
                 </span>
                 <span className="text-[11px] font-black uppercase tracking-wider text-black/70">
@@ -139,7 +148,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <div className="nb-card bg-white p-3 text-center">
-                <span className="block text-2xl sm:text-3xl font-black text-[#2DD4BF]">
+                <span className="block text-2xl sm:text-3xl font-black text-[#42D1C3]">
                   &lt; 5s
                 </span>
                 <span className="text-[11px] font-black uppercase tracking-wider text-black/70">
@@ -161,15 +170,15 @@ export default function LandingPage() {
           <div className="lg:col-span-5">
             <div className="nb-card bg-white p-6 rotate-1 hover:rotate-0 transition-transform duration-300 relative">
               {/* Badge top corner */}
-              <div className="absolute -top-4 -right-4 px-3 py-1 rounded-xl bg-[#FF5D5D] text-white border-3 border-black text-xs font-black uppercase nb-shadow-sm">
+              <div className="absolute -top-4 -right-4 px-3 py-1 rounded-xl bg-[#FF6B70] text-white border-3 border-black text-xs font-black uppercase nb-shadow-sm">
                 Live Preview
               </div>
 
               <div className="flex items-center justify-between pb-4 border-b-3 border-black mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#FF5D5D] border-2 border-black" />
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#FFD93D] border-2 border-black" />
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#2DD4BF] border-2 border-black" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-[#FF6B70] border-2 border-black" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-[#FFE66D] border-2 border-black" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-[#42D1C3] border-2 border-black" />
                 </div>
                 <span className="text-xs font-black uppercase tracking-widest text-black">
                   CMPN • SE-A Division
@@ -178,7 +187,7 @@ export default function LandingPage() {
 
               {/* Mock Timetable Mini Grid */}
               <div className="space-y-2.5">
-                <div className="p-3 rounded-xl border-3 border-black bg-[#5CB8FF] nb-shadow-sm flex items-center justify-between">
+                <div className="p-3 rounded-xl border-3 border-black bg-[#FF6B70] nb-shadow-sm flex items-center justify-between">
                   <div>
                     <span className="text-xs font-black uppercase">CSC401 • DSA</span>
                     <p className="text-[11px] font-bold text-black/80">Prof. Rajesh Kulkarni (HOD)</p>
@@ -203,7 +212,7 @@ export default function LandingPage() {
                   ☕ Lunch Break • 01:00 PM – 01:30 PM
                 </div>
 
-                <div className="p-3 rounded-xl border-3 border-black bg-[#2DD4BF] nb-shadow-sm flex items-center justify-between">
+                <div className="p-3 rounded-xl border-3 border-black bg-[#42D1C3] nb-shadow-sm flex items-center justify-between">
                   <div>
                     <span className="text-xs font-black uppercase">CSL401 • DSA Practical</span>
                     <p className="text-[11px] font-bold text-black/80">2-Slot Lab Session</p>
@@ -236,9 +245,14 @@ export default function LandingPage() {
       <section id="features" className="py-20 bg-white border-y-3 border-black px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg border-2 border-black bg-[#FFD93D] inline-block mb-3">
+            <span className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg border-2 border-black bg-[#FFE66D] inline-block mb-3">
               Core Capabilities
             </span>
+            <div className="flex items-center justify-center gap-2 mb-3" aria-hidden="true">
+              <span className="nb-square bg-[#A78BFA]" />
+              <span className="nb-dot bg-[#42D1C3]" />
+              <span className="nb-square bg-[#FF6B70]" />
+            </div>
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
               Everything Your Institution Needs
             </h2>
@@ -249,8 +263,8 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
-              <div className="w-14 h-14 rounded-2xl bg-[#FF5D5D] border-3 border-black nb-shadow flex items-center justify-center text-white mb-5">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-[#FF6B70] border-3 border-black nb-shadow flex items-center justify-center text-white mb-5">
                 <Sparkles className="w-7 h-7 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-black uppercase text-black mb-2">
@@ -262,7 +276,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
               <div className="w-14 h-14 rounded-2xl bg-[#A78BFA] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
                 <Calendar className="w-7 h-7 stroke-[2.5]" />
               </div>
@@ -275,8 +289,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
-              <div className="w-14 h-14 rounded-2xl bg-[#2DD4BF] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-[#42D1C3] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
                 <Users className="w-7 h-7 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-black uppercase text-black mb-2">
@@ -288,8 +302,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
-              <div className="w-14 h-14 rounded-2xl bg-[#FFD93D] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-[#FFE66D] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
                 <MessageSquare className="w-7 h-7 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-black uppercase text-black mb-2">
@@ -301,8 +315,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 5 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
-              <div className="w-14 h-14 rounded-2xl bg-[#5CB8FF] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-[#FF6B70] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
                 <FileDown className="w-7 h-7 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-black uppercase text-black mb-2">
@@ -314,8 +328,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 6 */}
-            <div className="nb-card bg-[#FDF6EC] p-6 hover:-translate-y-1 transition-transform">
-              <div className="w-14 h-14 rounded-2xl bg-[#FF8A5C] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
+            <div className="nb-card bg-[#FFF5EB] p-6 hover:-translate-y-1 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-[#FFA477] border-3 border-black nb-shadow flex items-center justify-center text-black mb-5">
                 <ShieldCheck className="w-7 h-7 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-black uppercase text-black mb-2">
@@ -331,7 +345,7 @@ export default function LandingPage() {
 
       {/* ── Demo Accounts Section ── */}
       <section id="demo" className="py-20 px-4 md:px-8 max-w-7xl mx-auto">
-        <div className="nb-card bg-[#FFD93D] p-8 md:p-12 text-center">
+        <div className="nb-card bg-[#FFE66D] p-8 md:p-12 text-center">
           <span className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg border-2 border-black bg-white inline-block mb-3">
             Instant Verification
           </span>
@@ -348,7 +362,7 @@ export default function LandingPage() {
               href="/login?role=management"
               className="nb-card bg-white p-5 hover:-translate-y-1 transition-transform block"
             >
-              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#FF5D5D] text-white text-[11px] font-black uppercase">
+              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#FF6B70] text-white text-[11px] font-black uppercase">
                 Management
               </span>
               <h4 className="font-black text-base text-black mt-3 mb-1">
@@ -357,7 +371,7 @@ export default function LandingPage() {
               <p className="text-xs font-bold text-black/60 truncate">
                 management@campus.edu
               </p>
-              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#FF5D5D]">
+              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#FF6B70]">
                 <span>Master View & Users</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -377,7 +391,7 @@ export default function LandingPage() {
               <p className="text-xs font-bold text-black/60 truncate">
                 hod.cmpn@campus.edu
               </p>
-              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#845EF7]">
+              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#8B6DF0]">
                 <span>Generate & Publish</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -388,7 +402,7 @@ export default function LandingPage() {
               href="/login?role=teacher"
               className="nb-card bg-white p-5 hover:-translate-y-1 transition-transform block"
             >
-              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#2DD4BF] text-black text-[11px] font-black uppercase">
+              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#42D1C3] text-black text-[11px] font-black uppercase">
                 Teacher
               </span>
               <h4 className="font-black text-base text-black mt-3 mb-1">
@@ -397,7 +411,7 @@ export default function LandingPage() {
               <p className="text-xs font-bold text-black/60 truncate">
                 teacher.a1@campus.edu
               </p>
-              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#14B8A6]">
+              <div className="mt-4 pt-3 border-t-2 border-black/10 flex items-center justify-between text-xs font-black text-[#2FBFB2]">
                 <span>Class Timetable & Finder</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -408,7 +422,7 @@ export default function LandingPage() {
               href="/login?role=student"
               className="nb-card bg-white p-5 hover:-translate-y-1 transition-transform block"
             >
-              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#FFD93D] text-black text-[11px] font-black uppercase">
+              <span className="px-2.5 py-1 rounded-lg border-2 border-black bg-[#FFE66D] text-black text-[11px] font-black uppercase">
                 Student
               </span>
               <h4 className="font-black text-base text-black mt-3 mb-1">
@@ -426,11 +440,14 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Decorative barcode rule ── */}
+      <div className="nb-barcode" aria-hidden="true" />
+
       {/* ── Footer ── */}
-      <footer className="border-t-3 border-black bg-white py-12 px-4 md:px-8">
+      <footer className="bg-white py-12 px-4 md:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF5D5D] border-2 border-black flex items-center justify-center text-white">
+            <div className="w-10 h-10 rounded-xl bg-[#FF6B70] border-2 border-black flex items-center justify-center text-white">
               <Clock className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>

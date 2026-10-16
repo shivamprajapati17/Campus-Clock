@@ -269,78 +269,81 @@ export default function OverthinkingEnginePage() {
     switch (type) {
       case 'logical':
         return {
-          border: 'border-[#00F5FF]',
-          glow: 'shadow-[0_0_20px_rgba(0,245,255,0.35)]',
-          bg: 'bg-[#00F5FF]/10',
-          badge: 'bg-[#00F5FF] text-black',
-          titleColor: 'text-[#00F5FF]',
+          border: 'border-[#42D1C3]',
+          bg: 'bg-white',
+          badge: 'bg-[#42D1C3] text-black',
+          strip: 'bg-[#42D1C3]',
+          titleColor: 'text-[#171717]',
         };
       case 'whatif':
         return {
-          border: 'border-[#9D4EDD]',
-          glow: 'shadow-[0_0_20px_rgba(157,78,221,0.45)]',
-          bg: 'bg-[#9D4EDD]/15',
-          badge: 'bg-[#9D4EDD] text-white',
-          titleColor: 'text-[#9D4EDD]',
+          border: 'border-[#A78BFA]',
+          bg: 'bg-white',
+          badge: 'bg-[#A78BFA] text-black',
+          strip: 'bg-[#A78BFA]',
+          titleColor: 'text-[#171717]',
         };
       case 'catastrophe':
         return {
-          border: 'border-[#FF4D6D]',
-          glow: 'shadow-[0_0_25px_rgba(255,77,109,0.5)]',
-          bg: 'bg-[#FF4D6D]/15',
-          badge: 'bg-[#FF4D6D] text-white animate-pulse',
-          titleColor: 'text-[#FF4D6D]',
+          border: 'border-[#FF6B70]',
+          bg: 'bg-white',
+          badge: 'bg-[#FF6B70] text-white',
+          strip: 'bg-[#FF6B70]',
+          titleColor: 'text-[#171717]',
         };
       case 'delusion':
         return {
-          border: 'border-[#C77DFF]/70',
-          glow: 'shadow-[0_0_20px_rgba(199,125,255,0.25)]',
-          bg: 'bg-[#C77DFF]/5 backdrop-blur-md',
-          badge: 'bg-[#C77DFF]/40 text-[#E0AAFF]',
-          titleColor: 'text-[#E0AAFF]',
+          border: 'border-[#FFA477]',
+          bg: 'bg-white',
+          badge: 'bg-[#FFA477] text-black',
+          strip: 'bg-[#FFA477]',
+          titleColor: 'text-[#171717]',
         };
       default:
         return {
-          border: 'border-white',
-          glow: 'shadow-lg',
-          bg: 'bg-white/10',
-          badge: 'bg-white text-black',
-          titleColor: 'text-white',
+          border: 'border-[#171717]',
+          bg: 'bg-white',
+          badge: 'bg-[#171717] text-white',
+          strip: 'bg-[#171717]',
+          titleColor: 'text-[#171717]',
         };
     }
   };
 
+  const anxietyColor = (type: NodeData['type']) =>
+    type === 'logical'
+      ? '#42D1C3'
+      : type === 'whatif'
+      ? '#A78BFA'
+      : type === 'catastrophe'
+      ? '#FF6B70'
+      : '#FFA477';
+
   return (
-    <div className="min-h-screen bg-[#0B0C10] text-[#E0E2EC] font-mono selection:bg-[#9D4EDD] selection:text-white relative overflow-x-hidden">
-      {/* ── Background Grid & Ambient Glows ── */}
+    <div className="min-h-screen bg-cream text-ink relative overflow-x-hidden">
+      {/* ── Background dot-grid texture (blueprint substrate) ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.10]"
           style={{
             backgroundImage:
-              'radial-gradient(#00F5FF 1px, transparent 1px), radial-gradient(#9D4EDD 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-            backgroundPosition: '0 0, 16px 16px',
+              'radial-gradient(#171717 1px, transparent 1px)',
+            backgroundSize: '26px 26px',
           }}
         />
-        {/* Glow Spheres */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#9D4EDD]/15 blur-[120px] pointer-events-none animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-[#00F5FF]/10 blur-[130px] pointer-events-none" />
       </div>
 
       {/* ── Top Navigation Bar ── */}
-      <header className="relative z-20 border-b border-white/10 bg-[#0B0C10]/80 backdrop-blur-md px-4 sm:px-8 h-16 flex items-center justify-between">
+      <header className="relative z-20 border-b-3 border-black bg-white px-4 sm:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#9D4EDD] to-[#00F5FF] p-[2px] shadow-[0_0_15px_rgba(157,78,221,0.5)]">
-            <div className="w-full h-full bg-[#0B0C10] rounded-[10px] flex items-center justify-center">
-              <Brain className="w-5 h-5 text-[#00F5FF] stroke-[2.2]" />
-            </div>
+          <div className="w-10 h-10 rounded-xl bg-[#A78BFA] border-3 border-black nb-shadow-sm flex items-center justify-center">
+            <Brain className="w-5 h-5 text-black stroke-[2.2]" />
           </div>
           <div>
-            <span className="font-extrabold text-sm sm:text-base tracking-wider uppercase text-white font-sans">
+            <span className="font-black text-sm sm:text-base tracking-tight uppercase text-black block leading-none">
               The Overthinking Engine
             </span>
-            <span className="block text-[9px] uppercase tracking-widest text-[#9D4EDD] font-bold">
+            <span className="block text-[9px] uppercase tracking-widest text-[#7C5CF0] font-black">
               Cognitive Distortion Simulator v2.4
             </span>
           </div>
@@ -350,22 +353,22 @@ export default function OverthinkingEnginePage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 rounded-lg border text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer nb-shadow-sm ${
               soundEnabled
-                ? 'border-[#00F5FF] bg-[#00F5FF]/10 text-[#00F5FF] shadow-[0_0_10px_rgba(0,245,255,0.3)]'
-                : 'border-white/20 text-white/50 hover:text-white hover:border-white/40'
+                ? 'bg-[#42D1C3] text-black'
+                : 'bg-white text-black/60 hover:text-black'
             }`}
             title="Toggle 432Hz Ambient Sound"
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            <span className="hidden sm:inline text-[11px] font-bold">
+            <span className="hidden sm:inline text-[11px]">
               {soundEnabled ? 'Ambient Hum On' : 'Audio Muted'}
             </span>
           </button>
 
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-xs font-bold text-white transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg border-2 border-black bg-[#FFE66D] hover:bg-[#F2D94A] text-xs font-black text-black transition-all flex items-center gap-1.5 nb-shadow-sm"
           >
             <span>Campus Clock</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -375,24 +378,26 @@ export default function OverthinkingEnginePage() {
 
       {/* ── 1. HERO SECTION ── */}
       <section className="relative z-10 pt-12 pb-8 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#9D4EDD]/40 bg-[#9D4EDD]/10 text-[#E0AAFF] text-xs font-bold shadow-[0_0_15px_rgba(157,78,221,0.2)]">
-          <Sparkles className="w-3.5 h-3.5 text-[#00F5FF]" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border-2 border-black bg-white text-black text-xs font-black uppercase tracking-wider nb-shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 text-[#7C5CF0]" />
           <span>Neuro-Linguistic Spiral Mapping System</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white font-sans leading-none">
-          The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D4EDD] to-[#FF4D6D] drop-shadow-[0_0_35px_rgba(157,78,221,0.6)]">
+        <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight leading-[0.95] text-black">
+          The{' '}
+          <span className="inline-block bg-[#A78BFA] border-3 border-black px-2 -rotate-1 nb-shadow">
             Overthinking
-          </span> Engine
+          </span>{' '}
+          Engine
         </h1>
 
-        <p className="text-sm sm:text-base text-white/70 max-w-xl mx-auto font-sans leading-relaxed">
+        <p className="text-sm sm:text-base font-bold text-black/70 max-w-xl mx-auto leading-relaxed">
           Input a simple everyday scenario. Watch your neural architecture systematically spiral it into catastrophic existential chaos.
         </p>
 
-        {/* Central Glowing Input Bar */}
+        {/* Central Input Bar */}
         <div className="relative max-w-2xl mx-auto pt-2">
-          <div className="relative flex flex-col sm:flex-row items-center gap-2 p-1.5 rounded-2xl bg-[#13151D] border-2 border-[#9D4EDD] shadow-[0_0_25px_rgba(157,78,221,0.35)] transition-all focus-within:shadow-[0_0_35px_rgba(0,245,255,0.4)] focus-within:border-[#00F5FF]">
+          <div className="relative flex flex-col sm:flex-row items-center gap-2 p-2 rounded-2xl bg-white border-3 border-black nb-shadow">
             <input
               type="text"
               value={scenario}
@@ -401,28 +406,28 @@ export default function OverthinkingEnginePage() {
                 if (e.key === 'Enter') handleStartEngine();
               }}
               placeholder="e.g., They haven't replied to my message in 20 minutes..."
-              className="w-full bg-transparent px-4 py-3 text-xs sm:text-sm text-white placeholder-white/40 outline-none font-mono"
+              className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-black placeholder-black/40 outline-none font-semibold"
             />
             <button
               onClick={() => handleStartEngine()}
               disabled={!scenario.trim()}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#9D4EDD] to-[#00F5FF] text-black font-extrabold text-xs uppercase tracking-wider font-sans hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,245,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0 flex items-center justify-center gap-2"
+              className="nb-btn w-full sm:w-auto bg-[#FF6B70] text-white text-xs uppercase tracking-wider font-black disabled:opacity-40 shrink-0"
             >
-              <Zap className="w-4 h-4 fill-black" />
+              <Zap className="w-4 h-4" />
               <span>Start Engine</span>
             </button>
           </div>
 
           {/* Quick Presets */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-            <span className="text-[10px] uppercase font-bold text-white/40 tracking-wider">
+            <span className="text-[10px] uppercase font-black text-black/50 tracking-wider">
               Common Triggers:
             </span>
             {PRESETS.map((preset, idx) => (
               <button
                 key={idx}
                 onClick={() => handleStartEngine(preset)}
-                className="text-[11px] px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-white transition-all text-left truncate max-w-[260px]"
+                className="text-[11px] px-2.5 py-1 rounded-md bg-white border-2 border-black/25 hover:border-black hover:bg-[#FFF9F1] text-black/70 hover:text-black font-semibold transition-all text-left truncate max-w-[260px]"
               >
                 {preset}
               </button>
@@ -433,15 +438,15 @@ export default function OverthinkingEnginePage() {
 
       {/* ── KILL SWITCH / GROUNDING RESET MODAL BANNER ── */}
       {killSwitchTriggered && (
-        <div className="relative z-30 max-w-2xl mx-auto px-4 my-8 animate-fadeIn">
-          <div className="p-8 rounded-2xl border-2 border-[#00F5FF] bg-[#111827]/90 backdrop-blur-xl shadow-[0_0_40px_rgba(0,245,255,0.3)] text-center space-y-4">
-            <div className="w-14 h-14 rounded-full bg-[#00F5FF]/20 border border-[#00F5FF] flex items-center justify-center mx-auto text-[#00F5FF] shadow-[0_0_20px_rgba(0,245,255,0.5)]">
+        <div className="relative z-30 max-w-2xl mx-auto px-4 my-8">
+          <div className="p-8 rounded-2xl border-3 border-black bg-[#42D1C3] nb-shadow-lg text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-white border-3 border-black nb-shadow-sm flex items-center justify-center mx-auto text-black">
               <Compass className="w-7 h-7 stroke-[2.2]" />
             </div>
-            <h3 className="text-xl font-bold font-sans uppercase tracking-wider text-white">
+            <h3 className="text-xl font-black uppercase tracking-tight text-black">
               Neural Loop Terminated • Reality Restored
             </h3>
-            <p className="text-base text-[#00F5FF] font-sans italic max-w-lg mx-auto leading-relaxed">
+            <p className="text-base text-black font-bold max-w-lg mx-auto leading-relaxed">
               {groundingQuote}
             </p>
             <div className="pt-2">
@@ -450,7 +455,7 @@ export default function OverthinkingEnginePage() {
                   setKillSwitchTriggered(false);
                   setIsEngineRunning(true);
                 }}
-                className="px-5 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-wider text-white transition-all inline-flex items-center gap-2"
+                className="nb-btn bg-white text-black text-xs uppercase tracking-wider font-black"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Re-engage Thought Analysis</span>
@@ -462,75 +467,75 @@ export default function OverthinkingEnginePage() {
 
       {/* ── 2. THE MIND-MAP SPIRAL (MAIN CANVAS) ── */}
       {isEngineRunning && !killSwitchTriggered && (
-        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8 animate-fadeIn">
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8">
           {/* Active Scenario Anchor Node */}
           <div className="text-center relative">
             <div className="inline-block relative">
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#161822] border-2 border-white/30 shadow-[0_0_25px_rgba(255,255,255,0.15)] max-w-lg mx-auto">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#00F5FF] block mb-1">
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border-3 border-black nb-shadow max-w-lg mx-auto">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#7C5CF0] block mb-1">
                   Trigger Event (Origin Node)
                 </span>
-                <p className="text-sm sm:text-base font-bold text-white font-sans">
+                <p className="text-sm sm:text-base font-black text-black">
                   “{currentScenario}”
                 </p>
-                <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-white/50">
+                <div className="mt-2.5 pt-2 border-t-2 border-black/10 flex items-center justify-between text-[10px] font-bold text-black/60">
                   <span>Intensity: Level {intensity}/5</span>
                   <span>4 Branches Generated</span>
                 </div>
               </div>
               {/* Connector stem downwards */}
-              <div className="w-[2px] h-8 bg-gradient-to-b from-white/40 to-[#9D4EDD] mx-auto" />
+              <div className="w-[3px] h-8 bg-black mx-auto" />
             </div>
           </div>
 
           {/* Branch Filtering Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 border-b border-white/10 pb-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 border-b-3 border-black pb-4">
             <button
               onClick={() => setActiveTab('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-white text-black font-extrabold shadow-md'
-                  : 'bg-white/5 text-white/60 hover:text-white'
+                  ? 'bg-[#171717] text-white nb-shadow-sm'
+                  : 'bg-white text-black/60 hover:text-black'
               }`}
             >
               All 4 Branches
             </button>
             <button
               onClick={() => setActiveTab('logical')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'logical'
-                  ? 'border-[#00F5FF] bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.3)]'
-                  : 'border-white/10 text-white/60 hover:text-[#00F5FF]'
+                  ? 'bg-[#42D1C3] text-black nb-shadow-sm'
+                  : 'bg-white text-black/60 hover:text-black'
               }`}
             >
               Logical Reality (93%)
             </button>
             <button
               onClick={() => setActiveTab('whatif')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'whatif'
-                  ? 'border-[#9D4EDD] bg-[#9D4EDD]/20 text-[#9D4EDD] shadow-[0_0_15px_rgba(157,78,221,0.3)]'
-                  : 'border-white/10 text-white/60 hover:text-[#9D4EDD]'
+                  ? 'bg-[#A78BFA] text-black nb-shadow-sm'
+                  : 'bg-white text-black/60 hover:text-black'
               }`}
             >
               What If? Loop
             </button>
             <button
               onClick={() => setActiveTab('catastrophe')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'catastrophe'
-                  ? 'border-[#FF4D6D] bg-[#FF4D6D]/20 text-[#FF4D6D] shadow-[0_0_15px_rgba(255,77,109,0.3)]'
-                  : 'border-white/10 text-white/60 hover:text-[#FF4D6D]'
+                  ? 'bg-[#FF6B70] text-white nb-shadow-sm'
+                  : 'bg-white text-black/60 hover:text-black'
               }`}
             >
               Catastrophe
             </button>
             <button
               onClick={() => setActiveTab('delusion')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'delusion'
-                  ? 'border-[#E0AAFF] bg-[#E0AAFF]/20 text-[#E0AAFF] shadow-[0_0_15px_rgba(224,170,255,0.3)]'
-                  : 'border-white/10 text-white/60 hover:text-[#E0AAFF]'
+                  ? 'bg-[#FFA477] text-black nb-shadow-sm'
+                  : 'bg-white text-black/60 hover:text-black'
               }`}
             >
               3:00 AM Delusion
@@ -550,54 +555,51 @@ export default function OverthinkingEnginePage() {
                 return (
                   <div
                     key={branch.id}
-                    className={`rounded-2xl border-2 p-5 sm:p-6 transition-all duration-300 relative ${
+                    className={`rounded-2xl border-3 p-5 sm:p-6 transition-all duration-300 relative overflow-hidden nb-shadow ${
                       style.border
-                    } ${style.bg} ${style.glow} ${
+                    } ${style.bg} ${
                       isFaded
-                        ? 'opacity-25 grayscale hover:opacity-80 transition-opacity'
+                        ? 'opacity-40 grayscale hover:opacity-90 transition-opacity'
                         : isHighlighted
-                        ? 'ring-4 ring-[#00F5FF] scale-[1.02] bg-[#00F5FF]/15'
+                        ? 'ring-4 ring-[#42D1C3] -translate-y-1'
                         : ''
                     }`}
                   >
+                    {/* Colour classification strip */}
+                    <span className={`absolute inset-x-0 top-0 h-2 ${style.strip}`} />
+
                     {/* Top Branch Header */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-start justify-between gap-3 mb-3 mt-1.5">
                       <div>
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-white/50">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-black/50">
                           Branch Classification
                         </span>
-                        <h3 className={`text-lg sm:text-xl font-bold font-sans uppercase tracking-tight ${style.titleColor}`}>
+                        <h3 className={`text-lg sm:text-xl font-black uppercase tracking-tight ${style.titleColor}`}>
                           {branch.title}
                         </h3>
                       </div>
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${style.badge}`}>
+                      <span className={`px-2 py-1 rounded-md border-2 border-black text-[10px] font-black uppercase tracking-wider ${style.badge}`}>
                         {branch.probability} Likely
                       </span>
                     </div>
 
                     {/* Core Thought Narrative */}
-                    <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans font-medium mb-4">
+                    <p className="text-xs sm:text-sm text-black/85 leading-relaxed font-semibold mb-4">
                       {branch.text}
                     </p>
 
                     {/* Anxiety Meter */}
-                    <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 mb-4">
-                      <div className="flex items-center justify-between text-[10px] font-bold uppercase mb-1">
-                        <span className="text-white/60">Anxiety Metric</span>
-                        <span className={style.titleColor}>{branch.anxiety}% Index</span>
+                    <div className="p-3 rounded-xl bg-[#FFF9F1] border-2 border-black mb-4">
+                      <div className="flex items-center justify-between text-[10px] font-black uppercase mb-1.5">
+                        <span className="text-black/60">Anxiety Metric</span>
+                        <span className="text-black">{branch.anxiety}% Index</span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-500 ${
-                            branch.type === 'logical'
-                              ? 'bg-[#00F5FF]'
-                              : branch.type === 'whatif'
-                              ? 'bg-[#9D4EDD]'
-                              : branch.type === 'catastrophe'
-                              ? 'bg-[#FF4D6D]'
-                              : 'bg-[#E0AAFF]'
-                          }`}
-                          style={{ width: `${branch.anxiety}%` }}
+                      <div className="nb-progress" style={{ height: '12px' }}>
+                        <span
+                          style={{
+                            width: `${branch.anxiety}%`,
+                            backgroundColor: anxietyColor(branch.type),
+                          }}
                         />
                       </div>
                     </div>
@@ -607,7 +609,7 @@ export default function OverthinkingEnginePage() {
                       <div className="space-y-3">
                         <button
                           onClick={() => toggleNodeExpansion(branch.id)}
-                          className="w-full py-2 px-3 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-xs font-bold text-white/80 hover:text-white transition-all flex items-center justify-between cursor-pointer"
+                          className="w-full py-2 px-3 rounded-lg border-2 border-black bg-white hover:bg-[#FFF9F1] text-xs font-black uppercase text-black/80 hover:text-black transition-all flex items-center justify-between cursor-pointer"
                         >
                           <span>
                             {isExpanded
@@ -619,21 +621,21 @@ export default function OverthinkingEnginePage() {
 
                         {/* Sub Nodes Thread */}
                         {isExpanded && (
-                          <div className="space-y-2.5 pl-3 border-l-2 border-white/20 pt-1 animate-fadeIn">
+                          <div className="space-y-2.5 pl-3 border-l-3 border-black/30 pt-1">
                             {branch.subNodes.map((sub) => (
                               <div
                                 key={sub.id}
-                                className="p-3 rounded-xl bg-black/50 border border-white/10 hover:border-white/30 transition-all text-xs space-y-1"
+                                className="p-3 rounded-xl bg-[#FFF9F1] border-2 border-black transition-all text-xs space-y-1"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="font-bold text-white font-sans uppercase text-[11px]">
+                                  <span className="font-black text-black uppercase text-[11px]">
                                     {sub.title}
                                   </span>
-                                  <span className="text-[9px] text-white/40">
+                                  <span className="text-[9px] font-bold text-black/50">
                                     Prob: {sub.probability}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-white/70 font-sans leading-snug">
+                                <p className="text-[11px] text-black/70 font-semibold leading-snug">
                                   {sub.text}
                                 </p>
                               </div>
@@ -651,15 +653,15 @@ export default function OverthinkingEnginePage() {
 
       {/* ── 3. FLOATING CONTROL DASHBOARD PANEL ── */}
       <div className="sticky bottom-4 z-40 max-w-3xl mx-auto px-4 mt-8 pb-4">
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#13151D]/90 backdrop-blur-xl border-2 border-white/20 shadow-[0_10px_35px_rgba(0,0,0,0.8)] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border-3 border-black nb-shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Slider 1: Overthink Intensity */}
           <div className="w-full sm:w-56 space-y-1">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-white/60">
-              <span className="flex items-center gap-1 text-white">
-                <Sliders className="w-3 h-3 text-[#9D4EDD]" />
+            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-black/60">
+              <span className="flex items-center gap-1 text-black">
+                <Sliders className="w-3 h-3 text-[#7C5CF0]" />
                 <span>Intensity</span>
               </span>
-              <span className="text-[#9D4EDD] font-extrabold">
+              <span className="text-[#7C5CF0] font-black">
                 {intensity === 1
                   ? 'Mild'
                   : intensity === 2
@@ -677,42 +679,35 @@ export default function OverthinkingEnginePage() {
               max="5"
               value={intensity}
               onChange={(e) => setIntensity(parseInt(e.target.value, 10))}
-              className="w-full h-1.5 rounded-lg bg-white/20 accent-[#9D4EDD] cursor-pointer"
+              className="w-full h-2 rounded-lg bg-[#FFF9F1] border-2 border-black accent-[#A78BFA] cursor-pointer"
             />
           </div>
 
           {/* Toggle: Apply Grounding Filter */}
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start border-t sm:border-t-0 sm:border-l border-white/10 sm:pl-4 pt-2 sm:pt-0">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start border-t-2 sm:border-t-0 sm:border-l-2 border-black/10 sm:pl-4 pt-2 sm:pt-0">
             <div className="text-left">
-              <span className="text-xs font-bold text-white block">
+              <span className="text-xs font-black uppercase text-black block">
                 Grounding Filter
               </span>
-              <span className="text-[9px] text-white/50 block">
+              <span className="text-[9px] font-bold text-black/50 block">
                 Silence catastrophizing
               </span>
             </div>
             <button
+              type="button"
+              role="switch"
+              aria-checked={groundingFilter}
+              aria-label="Grounding filter"
+              data-on={groundingFilter}
               onClick={() => setGroundingFilter(!groundingFilter)}
-              className={`w-12 h-6 rounded-full transition-colors p-0.5 border cursor-pointer ${
-                groundingFilter
-                  ? 'bg-[#00F5FF] border-[#00F5FF]'
-                  : 'bg-white/10 border-white/30'
-              }`}
-            >
-              <div
-                className={`w-4.5 h-4.5 rounded-full transition-transform ${
-                  groundingFilter
-                    ? 'translate-x-6 bg-black shadow-md'
-                    : 'translate-x-0 bg-white'
-                }`}
-              />
-            </button>
+              className="nb-toggle"
+            />
           </div>
 
           {/* Button: Kill Switch / Force Reset */}
           <button
             onClick={handleKillSwitch}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#FF4D6D] bg-[#FF4D6D]/15 hover:bg-[#FF4D6D]/25 text-[#FF4D6D] font-black text-xs uppercase tracking-wider font-sans transition-all shadow-[0_0_15px_rgba(255,77,109,0.3)] flex items-center justify-center gap-2 cursor-pointer shrink-0"
+            className="nb-btn w-full sm:w-auto bg-[#FF6B70] text-white text-xs uppercase tracking-wider font-black shrink-0"
           >
             <Power className="w-4 h-4 stroke-[2.5]" />
             <span>Kill Switch</span>
@@ -722,4 +717,3 @@ export default function OverthinkingEnginePage() {
     </div>
   );
 }
-

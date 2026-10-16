@@ -209,26 +209,19 @@ export const SLOTS: Record<number, { label: string; start: string; end: string }
 /** Break falls between slot 4 and slot 5 (lunch break) */
 export const BREAK_AFTER_SLOT = 4;
 
-/** Badge / accent colours per role */
+/** Badge / accent colours per role (Neo-Brutalist palette) */
 export const ROLE_COLORS: Record<UserRole, string> = {
-  management: '#FF6B6B',
-  hod: '#845EF7',
-  teacher: '#20C997',
-  student: '#339AF0',
+  management: '#FF6B70', // coral red
+  hod: '#A78BFA', // lavender purple
+  teacher: '#42D1C3', // turquoise
+  student: '#FFE66D', // butter yellow
 } as const;
 
-/** Rotating palette for subject cards */
+/** Rotating palette for subject cards (Neo-Brutalist palette) */
 export const SUBJECT_COLORS: string[] = [
-  '#FF6B6B', // red
-  '#845EF7', // purple
-  '#20C997', // teal
-  '#339AF0', // blue
-  '#FCC419', // yellow
-  '#FF922B', // orange
-  '#F06595', // pink
-  '#51CF66', // green
-  '#3BC9DB', // cyan
-  '#A9E34B', // lime
-  '#E599F7', // lavender
-  '#74C0FC', // light-blue
+  '#FF6B70', // coral red
+  '#A78BFA', // lavender purple
+  '#42D1C3', // turquoise
+  '#FFE66D', // butter yellow
+  '#FFA477', // peach
 ] as const;

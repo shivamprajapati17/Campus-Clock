@@ -128,7 +128,7 @@ export default function UserManagementPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[640px]">
               <thead>
-                <tr className="border-b-3 border-black bg-[#FFD93D]">
+                <tr className="border-b-3 border-black bg-[#FFE66D]">
                   <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black">
                     Name & Email
                   </th>
@@ -153,7 +153,7 @@ export default function UserManagementPage() {
                   );
 
                   return (
-                    <tr key={u.id} className="hover:bg-[#FFFBEB] transition-colors">
+                    <tr key={u.id} className="hover:bg-[#FFF9F1] transition-colors">
                       <td className="p-3.5">
                         <span className="font-black text-sm text-black block">
                           {u.name}
@@ -175,7 +175,7 @@ export default function UserManagementPage() {
 
                       <td className="p-3.5">
                         {u.faculty_initial ? (
-                          <span className="px-2 py-0.5 rounded-md border border-black bg-[#2DD4BF] text-xs font-black text-black">
+                          <span className="px-2 py-0.5 rounded-md border border-black bg-[#42D1C3] text-xs font-black text-black">
                             {u.faculty_initial}
                           </span>
                         ) : (
@@ -186,7 +186,7 @@ export default function UserManagementPage() {
                       <td className="p-3.5 text-right">
                         <button
                           onClick={() => handleDeleteUser(u.id)}
-                          className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FF5D5D] hover:text-white transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FF6B70] hover:text-white transition-colors cursor-pointer"
                           title="Delete User"
                         >
                           <Trash2 className="w-4 h-4 stroke-[2.2]" />

@@ -65,7 +65,7 @@ export function TimetableCell({
       className={cn(
         'relative min-h-[96px] h-full p-2.5 rounded-xl border-3 border-black nb-shadow-sm flex flex-col justify-between transition-all select-none',
         editable && !entry.is_locked && 'cursor-grab active:cursor-grabbing hover:-translate-y-0.5 hover:shadow-md',
-        isClash && 'border-4 border-[#FF5D5D] animate-pulse bg-red-100 shadow-[0_0_12px_rgba(255,93,93,0.7)]'
+        isClash && 'border-4 border-[#FF6B70] animate-pulse bg-[#FFE3E4] shadow-[0_0_12px_rgba(255,107,112,0.7)]'
       )}
     >
       {/* Top Bar: Subject code + Clash/Lock */}

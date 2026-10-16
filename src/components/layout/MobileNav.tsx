@@ -58,7 +58,7 @@ export function MobileNav() {
             className={cn(
               'flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all',
               isActive
-                ? 'bg-[#FFD93D] text-black border-2 border-black nb-shadow-sm font-black'
+                ? 'bg-[#FFE66D] text-black border-2 border-black nb-shadow-sm font-black'
                 : 'text-black/70 hover:text-black font-bold'
             )}
           >

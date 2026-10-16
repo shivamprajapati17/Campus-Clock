@@ -15,7 +15,7 @@ export interface ThoughtBranch {
 function generateThoughtSpiral(scenario: string, intensity: number = 3) {
   const cleanScenario = scenario.trim();
 
-  // 1. Logical Reality (Calm Cyan #00F5FF)
+  // 1. Logical Reality (Turquoise #42D1C3)
   const logicalBranch: ThoughtBranch = {
     id: 'branch-logical',
     type: 'logical',
@@ -46,7 +46,7 @@ function generateThoughtSpiral(scenario: string, intensity: number = 3) {
     ],
   };
 
-  // 2. The 'What If?' Loop (Neon Purple #9D4EDD)
+  // 2. The 'What If?' Loop (Lavender #A78BFA)
   const whatIfBranch: ThoughtBranch = {
     id: 'branch-whatif',
     type: 'whatif',
@@ -88,7 +88,7 @@ function generateThoughtSpiral(scenario: string, intensity: number = 3) {
     ],
   };
 
-  // 3. Worst-Case Catastrophe (Urgent Coral #FF4D6D)
+  // 3. Worst-Case Catastrophe (Coral #FF6B70)
   const catastropheBranch: ThoughtBranch = {
     id: 'branch-catastrophe',
     type: 'catastrophe',

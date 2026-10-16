@@ -116,7 +116,7 @@ export default function TimetableListPage() {
             >
               {/* Corner badge */}
               <div className="flex items-start justify-between gap-2 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-black border-2 border-white text-[#FFD93D] flex items-center justify-center font-black">
+                <div className="w-12 h-12 rounded-xl bg-black border-2 border-white text-[#FFE66D] flex items-center justify-center font-black">
                   <Calendar className="w-6 h-6 stroke-[2.2]" />
                 </div>
                 <Badge color={isPublished ? 'accent' : 'yellow'} size="sm">
@@ -166,7 +166,7 @@ export default function TimetableListPage() {
 
                 <Link href={`/dashboard/exports?id=${tt.id}`}>
                   <button
-                    className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FDF6EC] nb-shadow-sm cursor-pointer"
+                    className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FFF5EB] nb-shadow-sm cursor-pointer"
                     title="Export PDF / Excel"
                   >
                     <FileDown className="w-4 h-4 stroke-[2.2]" />

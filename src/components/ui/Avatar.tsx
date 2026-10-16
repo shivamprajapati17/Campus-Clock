@@ -18,10 +18,10 @@ export function Avatar({
   ...props
 }: AvatarProps) {
   const roleBg: Record<UserRole, string> = {
-    management: 'bg-[#FF5D5D] text-white',
+    management: 'bg-[#FF6B70] text-white',
     hod: 'bg-[#A78BFA] text-black',
-    teacher: 'bg-[#2DD4BF] text-black',
-    student: 'bg-[#FFD93D] text-black',
+    teacher: 'bg-[#42D1C3] text-black',
+    student: 'bg-[#FFE66D] text-black',
   };
 
   const sizeStyles = {
@@ -35,7 +35,7 @@ export function Avatar({
     <div
       className={cn(
         'inline-flex items-center justify-center font-black rounded-full border-black nb-shadow-sm select-none shrink-0',
-        roleBg[role] || 'bg-[#FFD93D] text-black',
+        roleBg[role] || 'bg-[#FFE66D] text-black',
         sizeStyles[size],
         className
       )}

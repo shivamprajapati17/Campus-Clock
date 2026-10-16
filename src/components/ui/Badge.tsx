@@ -17,18 +17,18 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const colorMap: Record<string, string> = {
-    primary: 'bg-[#FF5D5D] text-white',
+    primary: 'bg-[#FF6B70] text-white',
     secondary: 'bg-[#A78BFA] text-black',
-    accent: 'bg-[#2DD4BF] text-black',
-    yellow: 'bg-[#FFD93D] text-black',
-    blue: 'bg-[#5CB8FF] text-black',
-    orange: 'bg-[#FF8A5C] text-black',
+    accent: 'bg-[#42D1C3] text-black',
+    yellow: 'bg-[#FFE66D] text-black',
+    blue: 'bg-[#FF6B70] text-black',
+    orange: 'bg-[#FFA477] text-black',
     outline: 'bg-white text-black',
     // Roles
-    management: 'bg-[#FF5D5D] text-white',
+    management: 'bg-[#FF6B70] text-white',
     hod: 'bg-[#A78BFA] text-black',
-    teacher: 'bg-[#2DD4BF] text-black',
-    student: 'bg-[#FFD93D] text-black',
+    teacher: 'bg-[#42D1C3] text-black',
+    student: 'bg-[#FFE66D] text-black',
   };
 
   const sizeStyles = {
@@ -40,7 +40,7 @@ export function Badge({
     <span
       className={cn(
         'nb-badge inline-flex items-center gap-1 font-black uppercase tracking-wider',
-        colorMap[color] || 'bg-[#FFD93D] text-black',
+        colorMap[color] || 'bg-[#FFE66D] text-black',
         sizeStyles[size],
         className
       )}

@@ -46,7 +46,7 @@ export const Dropdown = React.forwardRef<HTMLSelectElement, DropdownProps>(
             <ChevronDown className="w-5 h-5 stroke-[2.5]" />
           </div>
         </div>
-        {error && <span className="text-xs font-bold text-[#FF5D5D] mt-0.5">{error}</span>}
+        {error && <span className="text-xs font-bold text-[#FF6B70] mt-0.5">{error}</span>}
       </div>
     );
   }

@@ -1,72 +1,143 @@
 @import "tailwindcss";
 
+/* ═════════════════════════════════════════════════════════════
+   CAMPUS CLOCK — NEO-BRUTALIST DESIGN SYSTEM
+   Warm cream substrate · coral / lavender / turquoise / butter
+   Thick near-black borders · hard offset shadows · no blur
+   ═════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Remap Tailwind's `black` to the warm near-black ink */
+  --color-black: #171717;
+
+  /* Design tokens */
+  --color-ink: #171717;
+  --color-cream: #fff5eb;
+  --color-surface: #ffffff;
+  --color-coral: #ff6b70;
+  --color-lavender: #a78bfa;
+  --color-turquoise: #42d1c3;
+  --color-butter: #ffe66d;
+  --color-peach: #ffa477;
+  --color-muted: #777777;
+
+  --font-sans: var(--font-poppins), "Poppins", "Nunito Sans", ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
 :root {
-  --bg: #FDF6EC;
-  --primary: #FF5D5D;
-  --secondary: #A78BFA;
-  --accent: #2DD4BF;
-  --yellow: #FFD93D;
-  --blue: #5CB8FF;
-  --orange: #FF8A5C;
-  --dark: #121212;
-  --border: 3px solid #000;
-  --shadow: 4px 4px 0 #000;
-  --shadow-hover: 6px 6px 0 #000;
-  --shadow-sm: 2px 2px 0 #000;
-  --shadow-lg: 8px 8px 0 #000;
+  --bg: #fff5eb;
+  --surface: #ffffff;
+  --primary: #ff6b70; /* Coral red */
+  --secondary: #a78bfa; /* Lavender purple */
+  --accent: #42d1c3; /* Turquoise */
+  --yellow: #ffe66d; /* Butter yellow */
+  --orange: #ffa477; /* Peach */
+  --blue: #a78bfa; /* legacy alias → lavender */
+  --ink: #171717; /* Near-black */
+  --muted: #777777; /* Secondary text */
+  --line: 3px;
+  --line-thick: var(--line) solid var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-hover: 6px 6px 0 var(--ink);
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow-lg: 8px 8px 0 var(--ink);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 18px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background-color: var(--bg);
-  color: #000000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
-/* ── Neubrutalism Utility Classes ── */
+/* Mechanical paper grain across the whole DOM root */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* ── Accessibility: visible keyboard focus everywhere ── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   BORDER / SHADOW UTILITIES
+   ═════════════════════════════════════════════════════════════ */
+
 .nb-border {
-  border: 3px solid #000000 !important;
+  border: var(--line-thick) !important;
 }
-
 .nb-border-b {
-  border-bottom: 3px solid #000000 !important;
+  border-bottom: var(--line-thick) !important;
 }
-
 .nb-border-t {
-  border-top: 3px solid #000000 !important;
+  border-top: var(--line-thick) !important;
 }
-
 .nb-border-l {
-  border-left: 3px solid #000000 !important;
+  border-left: var(--line-thick) !important;
 }
-
 .nb-border-r {
-  border-right: 3px solid #000000 !important;
+  border-right: var(--line-thick) !important;
 }
 
 .nb-shadow {
-  box-shadow: 4px 4px 0 #000000 !important;
+  box-shadow: var(--shadow) !important;
 }
-
 .nb-shadow-sm {
-  box-shadow: 2px 2px 0 #000000 !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.nb-shadow-lg {
+  box-shadow: var(--shadow-lg) !important;
+}
+.nb-shadow-none {
+  box-shadow: none !important;
 }
 
-.nb-shadow-lg {
-  box-shadow: 8px 8px 0 #000000 !important;
-}
+/* ═════════════════════════════════════════════════════════════
+   CARDS
+   ═════════════════════════════════════════════════════════════ */
 
 .nb-card {
-  background: #ffffff;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0 #000000;
-  border-radius: 16px;
+  background: var(--surface);
+  border: var(--line-thick);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-lg);
   padding: 20px;
 }
 
@@ -76,64 +147,100 @@ body {
 
 .nb-card-hover:hover {
   transform: translate(-3px, -3px);
-  box-shadow: 7px 7px 0 #000000 !important;
+  box-shadow: 7px 7px 0 var(--ink) !important;
 }
+
+/* ═════════════════════════════════════════════════════════════
+   BUTTONS
+   ═════════════════════════════════════════════════════════════ */
 
 .nb-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #000000;
-  box-shadow: 4px 4px 0 #000000;
-  border-radius: 12px;
+  gap: 0.5rem;
+  border: var(--line-thick);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-sm);
   font-weight: 800;
   padding: 10px 18px;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease,
+    background-color 0.15s ease;
   user-select: none;
   font-size: 0.95rem;
+  line-height: 1.1;
+  text-decoration: none;
 }
 
+/* Hover: move toward the shadow, reduce the offset */
 .nb-btn:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #000000;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
 }
 
+/* Active: fully pressed, flush with the page */
 .nb-btn:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.nb-btn:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
 }
 
 .nb-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none !important;
-  box-shadow: 2px 2px 0 #000000 !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
+/* ═════════════════════════════════════════════════════════════
+   INPUTS & SEARCH
+   ═════════════════════════════════════════════════════════════ */
+
 .nb-input {
-  border: 3px solid #000000;
-  border-radius: 12px;
+  border: var(--line-thick);
+  border-radius: var(--radius-sm);
   padding: 12px 16px;
   font-size: 15px;
   font-weight: 600;
-  background: #ffffff;
+  background: var(--surface);
   outline: none;
   width: 100%;
-  color: #000000;
-  box-shadow: 2px 2px 0 #000000;
-  transition: box-shadow 0.15s ease;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.nb-input:focus {
-  box-shadow: 5px 5px 0 #000000;
+.nb-input::placeholder {
+  color: #9a9a9a;
+  font-weight: 500;
 }
+
+.nb-input:hover {
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.nb-input:focus,
+.nb-input:focus-visible {
+  box-shadow: 5px 5px 0 var(--ink);
+  border-color: var(--ink);
+  outline: none;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   BADGES
+   ═════════════════════════════════════════════════════════════ */
 
 .nb-badge {
   display: inline-flex;
   align-items: center;
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0 #000000;
+  gap: 0.25rem;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
   border-radius: 8px;
   font-weight: 800;
   padding: 3px 8px;
@@ -142,28 +249,208 @@ body {
   text-transform: uppercase;
 }
 
-/* Lunch / Break striped pattern */
+/* ═════════════════════════════════════════════════════════════
+   TOGGLES & CHECKBOXES
+   ═════════════════════════════════════════════════════════════ */
+
+.nb-toggle {
+  position: relative;
+  width: 54px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s ease;
+}
+
+.nb-toggle[data-on="true"] {
+  background: var(--accent);
+}
+
+.nb-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.nb-toggle[data-on="true"]::after {
+  transform: translateX(24px);
+  background: var(--yellow);
+}
+
+.nb-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nb-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: inline-grid;
+  place-content: center;
+  transition: background-color 0.12s ease;
+}
+
+.nb-checkbox:checked {
+  background: var(--yellow);
+}
+
+.nb-checkbox:checked::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--ink);
+  clip-path: polygon(
+    14% 44%,
+    0 60%,
+    40% 100%,
+    100% 22%,
+    84% 6%,
+    40% 68%
+  );
+}
+
+.nb-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   PROGRESS BARS
+   ═════════════════════════════════════════════════════════════ */
+
+.nb-progress {
+  width: 100%;
+  height: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.nb-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-right: 2px solid var(--ink);
+  transition: width 0.4s ease;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   LUNCH / BREAK STRIPED PATTERN
+   ═════════════════════════════════════════════════════════════ */
+
 .break-pattern {
   background: repeating-linear-gradient(
     45deg,
-    #FFD93D,
-    #FFD93D 12px,
-    #FFFBEB 12px,
-    #FFFBEB 24px
+    var(--yellow),
+    var(--yellow) 12px,
+    #fffdf5 12px,
+    #fffdf5 24px
   );
-  border: 3px solid #000;
+  border: var(--line-thick);
 }
 
-/* Custom Scrollbars */
+/* ═════════════════════════════════════════════════════════════
+   DECORATIVE GEOMETRY
+   ═════════════════════════════════════════════════════════════ */
+
+.nb-dot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.nb-square {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  display: inline-block;
+}
+
+.nb-star {
+  width: 14px;
+  height: 14px;
+  background: var(--butter);
+  border: 2px solid var(--ink);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  display: inline-block;
+}
+
+/* Zebra / barcode strip used as a decorative rule */
+.nb-barcode {
+  height: 14px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 2px,
+    transparent 2px 5px,
+    var(--ink) 5px 6px,
+    transparent 6px 11px
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════
+   SCROLLBARS
+   ═════════════════════════════════════════════════════════════ */
+
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #FDF6EC;
-  border: 2px solid #000;
+  background: var(--bg);
+  border-left: 1px solid var(--ink);
 }
 ::-webkit-scrollbar-thumb {
-  background: #000;
+  background: var(--ink);
   border-radius: 4px;
+  border: 2px solid var(--bg);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   MOTION
+   ═════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

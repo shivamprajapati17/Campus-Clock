@@ -146,7 +146,7 @@ export default function GeneratePage() {
         {/* Configuration Card */}
         <Card className="p-6 bg-white">
           <h2 className="text-base font-black uppercase text-black mb-4 flex items-center gap-2">
-            <Zap className="w-5 h-5 text-[#FF5D5D]" />
+            <Zap className="w-5 h-5 text-[#FF6B70]" />
             <span>Generation Parameters</span>
           </h2>
 
@@ -205,14 +205,14 @@ export default function GeneratePage() {
             {/* Status & Clash Report Card */}
             <Card
               className={`p-5 ${
-                clashes.length === 0 ? 'bg-[#2DD4BF]/20 border-green-600' : 'bg-red-50'
+                clashes.length === 0 ? 'bg-[#42D1C3]/20 border-green-600' : 'bg-red-50'
               }`}
             >
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-12 h-12 rounded-xl border-3 border-black nb-shadow flex items-center justify-center text-white ${
-                      clashes.length === 0 ? 'bg-[#2DD4BF] text-black' : 'bg-[#FF5D5D]'
+                      clashes.length === 0 ? 'bg-[#42D1C3] text-black' : 'bg-[#FF6B70]'
                     }`}
                   >
                     {clashes.length === 0 ? (

@@ -42,7 +42,7 @@ export function Navbar() {
       <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-xl border-2 border-black bg-[#FFD93D] text-black nb-shadow-sm md:hidden cursor-pointer"
+          className="p-2 rounded-xl border-2 border-black bg-[#FFE66D] text-black nb-shadow-sm md:hidden cursor-pointer"
           aria-label="Toggle Navigation"
         >
           <Menu className="w-5 h-5 stroke-[2.5]" />
@@ -61,7 +61,7 @@ export function Navbar() {
         {(user?.role === 'hod' || user?.role === 'management') && (
           <Link
             href="/dashboard/generate"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-[#2DD4BF] text-black text-xs font-black nb-shadow-sm hover:translate-x-[-1px] hover:translate-y-[-1px] transition-transform"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-[#42D1C3] text-black text-xs font-black nb-shadow-sm hover:translate-x-[-1px] hover:translate-y-[-1px] transition-transform"
           >
             <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Generate</span>
@@ -72,12 +72,12 @@ export function Navbar() {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-xl border-2 border-black bg-white text-black nb-shadow-sm hover:bg-[#FFFBEB] cursor-pointer"
+            className="relative p-2 rounded-xl border-2 border-black bg-white text-black nb-shadow-sm hover:bg-[#FFF9F1] cursor-pointer"
             aria-label="View notifications"
           >
             <Bell className="w-5 h-5 stroke-[2.2]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#FF5D5D] border-2 border-black text-white text-[10px] font-black flex items-center justify-center animate-bounce">
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#FF6B70] border-2 border-black text-white text-[10px] font-black flex items-center justify-center animate-bounce">
                 {unreadCount}
               </span>
             )}
@@ -85,7 +85,7 @@ export function Navbar() {
 
           {/* Notifications Dropdown Panel */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#FDF6EC] rounded-2xl border-3 border-black nb-shadow p-3 z-50">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#FFF5EB] rounded-2xl border-3 border-black nb-shadow p-3 z-50">
               <div className="flex items-center justify-between pb-2 border-b-2 border-black mb-2">
                 <span className="text-xs font-black uppercase tracking-wider text-black">
                   Notifications ({unreadCount} new)
@@ -106,7 +106,7 @@ export function Navbar() {
                       key={notif.id}
                       onClick={() => markRead(notif.id)}
                       className={`p-2.5 rounded-xl border-2 border-black transition-all cursor-pointer ${
-                        notif.read ? 'bg-white/80 opacity-70' : 'bg-[#FFD93D]/30 nb-shadow-sm'
+                        notif.read ? 'bg-white/80 opacity-70' : 'bg-[#FFE66D]/30 nb-shadow-sm'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -114,7 +114,7 @@ export function Navbar() {
                           {notif.message}
                         </p>
                         {!notif.read && (
-                          <span className="w-2 h-2 rounded-full bg-[#FF5D5D] shrink-0 mt-1" />
+                          <span className="w-2 h-2 rounded-full bg-[#FF6B70] shrink-0 mt-1" />
                         )}
                       </div>
                       <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/10 text-[10px] font-bold text-black/60">

@@ -52,7 +52,7 @@ export function Sidebar() {
     {
       label: 'Auto Generator',
       href: '/dashboard/generate',
-      icon: <Sparkles className="w-5 h-5 stroke-[2.2] text-[#FF5D5D]" />,
+      icon: <Sparkles className="w-5 h-5 stroke-[2.2] text-[#FF6B70]" />,
       roles: ['management', 'hod'],
       badge: '0-Clash',
     },
@@ -122,9 +122,9 @@ export function Sidebar() {
       >
         {/* Top: Brand Header */}
         <div>
-          <div className="p-5 border-b-3 border-black bg-[#FFD93D] flex items-center justify-between">
+          <div className="p-5 border-b-3 border-black bg-[#FFE66D] flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-black border-2 border-white flex items-center justify-center text-[#FFD93D] shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-black border-2 border-white flex items-center justify-center text-[#FFE66D] shadow-md">
                 <Clock className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div>
@@ -147,7 +147,7 @@ export function Sidebar() {
           </div>
 
           {/* User badge preview */}
-          <div className="p-3 bg-[#FDF6EC] border-b-2 border-black/30 flex items-center justify-between">
+          <div className="p-3 bg-[#FFF5EB] border-b-2 border-black/30 flex items-center justify-between">
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="w-7 h-7 rounded-lg border-2 border-black bg-white flex items-center justify-center font-black text-xs text-black">
                 {user?.name ? user.name[0].toUpperCase() : 'U'}
@@ -181,8 +181,8 @@ export function Sidebar() {
                   className={cn(
                     'flex items-center justify-between px-3.5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wide border-2 transition-all select-none',
                     isActive
-                      ? 'bg-[#FFD93D] text-black border-black nb-shadow-sm translate-x-1'
-                      : 'bg-transparent text-black/80 border-transparent hover:bg-[#FFFBEB] hover:border-black/20 hover:text-black'
+                      ? 'bg-[#FFE66D] text-black border-black nb-shadow-sm translate-x-1'
+                      : 'bg-transparent text-black/80 border-transparent hover:bg-[#FFF9F1] hover:border-black/20 hover:text-black'
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -203,10 +203,10 @@ export function Sidebar() {
         </div>
 
         {/* Bottom: Logout */}
-        <div className="p-4 border-t-3 border-black bg-[#FDF6EC]">
+        <div className="p-4 border-t-3 border-black bg-[#FFF5EB]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 border-black bg-[#FF5D5D] text-white font-black text-xs uppercase tracking-wider nb-shadow-sm hover:bg-[#ff4242] transition-transform active:translate-y-0.5 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 border-black bg-[#FF6B70] text-white font-black text-xs uppercase tracking-wider nb-shadow-sm hover:bg-[#FF5459] transition-transform active:translate-y-0.5 cursor-pointer"
           >
             <LogOut className="w-4 h-4 stroke-[2.5]" />
             <span>Sign Out</span>

@@ -93,7 +93,7 @@ export function TimetableGrid({
             )}
           </div>
           {editable && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border-2 border-black bg-[#FFD93D] text-xs font-black nb-shadow-sm">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border-2 border-black bg-[#FFE66D] text-xs font-black nb-shadow-sm">
               <span>⚡ Drag cells to swap slots</span>
             </div>
           )}
@@ -105,7 +105,7 @@ export function TimetableGrid({
         <table className="w-full border-collapse min-w-[760px] table-fixed">
           <thead>
             <tr>
-              <th className="w-24 p-2 text-center bg-[#FFD93D] border-3 border-black text-xs font-black uppercase tracking-wider text-black rounded-tl-xl">
+              <th className="w-24 p-2 text-center bg-[#FFE66D] border-3 border-black text-xs font-black uppercase tracking-wider text-black rounded-tl-xl">
                 Time / Slot
               </th>
               {dayNumbers.map((d, idx) => (
@@ -117,14 +117,14 @@ export function TimetableGrid({
                   style={{
                     backgroundColor:
                       d === 1
-                        ? '#5CB8FF'
+                        ? '#FF6B70'
                         : d === 2
                         ? '#A78BFA'
                         : d === 3
-                        ? '#2DD4BF'
+                        ? '#42D1C3'
                         : d === 4
-                        ? '#FF8A5C'
-                        : '#FFD93D',
+                        ? '#FFA477'
+                        : '#FFE66D',
                   }}
                 >
                   {DAYS[d]}
@@ -141,7 +141,7 @@ export function TimetableGrid({
                 <React.Fragment key={slotNum}>
                   <tr className="border-b-2 border-black">
                     {/* Time Slot column */}
-                    <td className="p-2 border-3 border-black bg-[#FFFBEB] text-center align-middle">
+                    <td className="p-2 border-3 border-black bg-[#FFF9F1] text-center align-middle">
                       <div className="font-black text-xs text-black uppercase">
                         Slot {slotNum}
                       </div>
@@ -187,7 +187,7 @@ export function TimetableGrid({
                         colSpan={6}
                         className="p-2.5 break-pattern text-center border-3 border-black select-none"
                       >
-                        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-xl bg-black text-[#FFD93D] font-black text-xs tracking-widest uppercase border-2 border-white shadow-md">
+                        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-xl bg-black text-[#FFE66D] font-black text-xs tracking-widest uppercase border-2 border-white shadow-md">
                           <Coffee className="w-4 h-4 stroke-[2.5]" />
                           <span>LUNCH BREAK • 01:00 PM – 01:30 PM (FREE PERIOD)</span>
                         </div>

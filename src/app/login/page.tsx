@@ -106,17 +106,17 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDF6EC] flex flex-col justify-center items-center p-4">
+    <div className="min-h-screen bg-[#FFF5EB] flex flex-col justify-center items-center p-4">
       {/* Brand Header */}
       <Link href="/" className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-2xl bg-[#FF5D5D] border-3 border-black nb-shadow flex items-center justify-center text-white">
+        <div className="w-12 h-12 rounded-2xl bg-[#FF6B70] border-3 border-black nb-shadow flex items-center justify-center text-white">
           <Clock className="w-7 h-7 stroke-[2.5]" />
         </div>
         <div>
           <span className="font-black text-2xl uppercase tracking-tighter block text-black">
             Campus Clock
           </span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#FF5D5D]">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6B70]">
             Single Sign-On Portal
           </span>
         </div>
@@ -133,10 +133,10 @@ function LoginForm() {
         </div>
 
         {/* ── 1-Click Role Selectors ── */}
-        <div className="mb-6 p-4 rounded-xl border-3 border-black bg-[#FFFBEB] nb-shadow-sm">
+        <div className="mb-6 p-4 rounded-xl border-3 border-black bg-[#FFF9F1] nb-shadow-sm">
           <div className="flex items-center justify-between mb-2.5">
             <span className="text-xs font-black uppercase text-black flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF5D5D]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#FF6B70]" />
               <span>1-Click Demo Profiles</span>
             </span>
             <span className="text-[10px] font-bold text-black/60">
@@ -150,8 +150,8 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('management')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'management'
-                  ? 'bg-[#FF5D5D] text-white nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#FF5D5D]/10'
+                  ? 'bg-[#FF6B70] text-white nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#FF6B70]/10'
               }`}
             >
               <span>👔 Dean</span>
@@ -176,8 +176,8 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('teacher')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'teacher'
-                  ? 'bg-[#2DD4BF] text-black nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#2DD4BF]/10'
+                  ? 'bg-[#42D1C3] text-black nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#42D1C3]/10'
               }`}
             >
               <span>👩‍🏫 Teacher</span>
@@ -189,8 +189,8 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('student')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'student'
-                  ? 'bg-[#FFD93D] text-black nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#FFD93D]/20'
+                  ? 'bg-[#FFE66D] text-black nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#FFE66D]/20'
               }`}
             >
               <span>🎒 Student</span>
@@ -201,7 +201,7 @@ function LoginForm() {
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl border-2 border-[#FF5D5D] bg-[#FFEAEA] text-xs font-black text-[#FF5D5D]">
+          <div className="mb-4 p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
             {error}
           </div>
         )}
@@ -230,11 +230,7 @@ function LoginForm() {
 
           <div className="flex items-center justify-between text-xs font-bold pt-1">
             <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                defaultChecked
-                className="w-4 h-4 rounded border-2 border-black accent-[#FFD93D]"
-              />
+              <input type="checkbox" defaultChecked className="nb-checkbox" />
               <span className="text-black/80">Remember session</span>
             </label>
             <span className="text-black/50 hover:underline cursor-pointer">
@@ -269,7 +265,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FDF6EC] flex items-center justify-center font-black">Loading Login...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#FFF5EB] flex items-center justify-center font-black">Loading Login...</div>}>
       <LoginForm />
     </Suspense>
   );

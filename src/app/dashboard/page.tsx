@@ -38,7 +38,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* ── Welcome Banner ── */}
-      <div className="nb-card bg-[#FFD93D] p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="nb-card bg-[#FFE66D] p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-black uppercase tracking-widest text-black/75">
@@ -110,14 +110,14 @@ export default function DashboardPage() {
           value={publishedCount}
           subtitle={`${draftCount} in Draft status`}
           icon={<CheckCircle2 className="w-5 h-5 text-green-700" />}
-          color="#2DD4BF"
+          color="#42D1C3"
         />
 
         <StatCard
           title="Clash Rate"
           value="0.0%"
           subtitle="Backtracking Verified"
-          icon={<Sparkles className="w-5 h-5 text-[#FF5D5D]" />}
+          icon={<Sparkles className="w-5 h-5 text-[#FF6B70]" />}
           color="#A78BFA"
         />
       </div>
@@ -149,10 +149,10 @@ export default function DashboardPage() {
               {MOCK_TIMETABLES.map((tt) => (
                 <div
                   key={tt.id}
-                  className="p-4 rounded-xl border-3 border-black bg-[#FDF6EC] nb-shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:translate-x-1 transition-transform"
+                  className="p-4 rounded-xl border-3 border-black bg-[#FFF5EB] nb-shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:translate-x-1 transition-transform"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-black border-2 border-white text-[#FFD93D] flex items-center justify-center font-black">
+                    <div className="w-10 h-10 rounded-xl bg-black border-2 border-white text-[#FFE66D] flex items-center justify-center font-black">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           {/* Quick Shortcuts */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link href="/dashboard/faculty" className="block">
-              <Card hoverable className="p-4 bg-[#5CB8FF] text-black">
+              <Card hoverable className="p-4 bg-[#FF6B70] text-black">
                 <UserCheck className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Free Faculty</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -205,7 +205,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/chat" className="block">
-              <Card hoverable className="p-4 bg-[#FF8A5C] text-black">
+              <Card hoverable className="p-4 bg-[#FFA477] text-black">
                 <MessageSquare className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Live Chat</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -215,7 +215,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/exports" className="block">
-              <Card hoverable className="p-4 bg-[#2DD4BF] text-black">
+              <Card hoverable className="p-4 bg-[#42D1C3] text-black">
                 <FileDown className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Export PDF</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -234,7 +234,7 @@ export default function DashboardPage() {
               <h3 className="text-sm font-black uppercase text-black">
                 Department Faculty
               </h3>
-              <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFD93D] border border-black">
+              <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFE66D] border border-black">
                 {MOCK_FACULTY.length} Active
               </span>
             </div>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                   className="flex items-center justify-between p-2 rounded-xl border-2 border-black/20 hover:border-black bg-white transition-all text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg bg-[#FFD93D] border border-black flex items-center justify-center font-black text-[11px]">
+                    <span className="w-7 h-7 rounded-lg bg-[#FFE66D] border border-black flex items-center justify-center font-black text-[11px]">
                       {fac.initials}
                     </span>
                     <div>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Activity Notifications */}
-          <Card className="p-5 bg-[#FFFBEB]">
+          <Card className="p-5 bg-[#FFF9F1]">
             <div className="flex items-center justify-between pb-3 border-b-2 border-black mb-3">
               <h3 className="text-sm font-black uppercase text-black flex items-center gap-1.5">
                 <Clock className="w-4 h-4" />

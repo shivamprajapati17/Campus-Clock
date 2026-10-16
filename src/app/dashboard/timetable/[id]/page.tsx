@@ -116,7 +116,7 @@ export default function TimetableDetailPage({
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/timetable"
-            className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FDF6EC] nb-shadow-sm text-black"
+            className="p-2 rounded-xl border-2 border-black bg-white hover:bg-[#FFF5EB] nb-shadow-sm text-black"
           >
             <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
           </Link>

@@ -54,10 +54,10 @@ export default function ChatPage() {
   };
 
   const roleColors: Record<UserRole, string> = {
-    management: '#FF5D5D',
+    management: '#FF6B70',
     hod: '#A78BFA',
-    teacher: '#2DD4BF',
-    student: '#FFD93D',
+    teacher: '#42D1C3',
+    student: '#FFE66D',
   };
 
   return (
@@ -99,8 +99,8 @@ export default function ChatPage() {
                     onClick={() => setActiveRoomId(room.id)}
                     className={`w-full p-3 rounded-xl border-2 text-left font-black text-xs uppercase tracking-tight transition-all cursor-pointer flex items-center justify-between ${
                       isActive
-                        ? 'bg-[#FFD93D] border-black nb-shadow-sm text-black -translate-y-0.5'
-                        : 'bg-[#FDF6EC] border-black/20 text-black/80 hover:border-black hover:bg-white'
+                        ? 'bg-[#FFE66D] border-black nb-shadow-sm text-black -translate-y-0.5'
+                        : 'bg-[#FFF5EB] border-black/20 text-black/80 hover:border-black hover:bg-white'
                     }`}
                   >
                     <span className="truncate pr-2">{room.name}</span>
@@ -114,21 +114,21 @@ export default function ChatPage() {
           </Card>
 
           {/* Role Identity Legend */}
-          <Card className="p-4 bg-[#FFFBEB]">
+          <Card className="p-4 bg-[#FFF9F1]">
             <h4 className="text-[11px] font-black uppercase text-black/70 mb-2">
               Role Color Badges:
             </h4>
             <div className="grid grid-cols-2 gap-2 text-[10px] font-black uppercase">
-              <span className="px-2 py-1 rounded-md border border-black bg-[#FF5D5D] text-white">
+              <span className="px-2 py-1 rounded-md border border-black bg-[#FF6B70] text-white">
                 👔 Management
               </span>
               <span className="px-2 py-1 rounded-md border border-black bg-[#A78BFA] text-black">
                 🎓 HOD
               </span>
-              <span className="px-2 py-1 rounded-md border border-black bg-[#2DD4BF] text-black">
+              <span className="px-2 py-1 rounded-md border border-black bg-[#42D1C3] text-black">
                 👩‍🏫 Teacher
               </span>
-              <span className="px-2 py-1 rounded-md border border-black bg-[#FFD93D] text-black">
+              <span className="px-2 py-1 rounded-md border border-black bg-[#FFE66D] text-black">
                 🎒 Student
               </span>
             </div>
@@ -139,7 +139,7 @@ export default function ChatPage() {
         <div className="md:col-span-8 flex flex-col">
           <Card className="p-0 bg-white flex flex-col flex-1 overflow-hidden min-h-[520px]">
             {/* Room Header */}
-            <div className="p-4 border-b-3 border-black bg-[#FFD93D] flex items-center justify-between">
+            <div className="p-4 border-b-3 border-black bg-[#FFE66D] flex items-center justify-between">
               <div>
                 <h3 className="font-black text-base text-black uppercase">
                   {activeRoom.name}
@@ -154,7 +154,7 @@ export default function ChatPage() {
             </div>
 
             {/* Messages Thread */}
-            <div className="flex-1 p-4 md:p-6 space-y-4 overflow-y-auto max-h-[380px] bg-[#FDF6EC]/40">
+            <div className="flex-1 p-4 md:p-6 space-y-4 overflow-y-auto max-h-[380px] bg-[#FFF5EB]/40">
               {roomMessages.length === 0 ? (
                 <div className="text-center py-12 text-black/50 font-bold text-xs uppercase">
                   No messages yet. Send the first message below!
@@ -164,7 +164,7 @@ export default function ChatPage() {
                   const isMine =
                     msg.sender_id === user?.id || msg.sender?.name === 'You';
                   const senderRole = (msg.sender?.role || 'student') as UserRole;
-                  const roleBg = roleColors[senderRole] || '#FFD93D';
+                  const roleBg = roleColors[senderRole] || '#FFE66D';
 
                   return (
                     <div
@@ -194,7 +194,7 @@ export default function ChatPage() {
                       <div
                         className={`max-w-md p-3.5 rounded-2xl border-2 border-black nb-shadow-sm font-bold text-xs text-black leading-relaxed ${
                           isMine
-                            ? 'bg-[#FFD93D] rounded-tr-none'
+                            ? 'bg-[#FFE66D] rounded-tr-none'
                             : 'bg-white rounded-tl-none'
                         }`}
                       >

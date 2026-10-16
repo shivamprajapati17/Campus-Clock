@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
+import { Toggle } from '@/components/ui/Toggle';
+import { Progress } from '@/components/ui/Progress';
 import { MOCK_USERS } from '@/lib/data/mockData';
 import type { User, UserRole } from '@/lib/types';
 import {
@@ -27,6 +29,10 @@ export default function ProfilePage() {
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [clashWarnings, setClashWarnings] = useState(true);
+  const [compactGrid, setCompactGrid] = useState(false);
 
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,9 +131,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Quick Persona Switcher for Evaluators */}
-          <Card className="p-5 bg-[#FFFBEB]">
+          <Card className="p-5 bg-[#FFF9F1]">
             <div className="flex items-center gap-1.5 mb-3">
-              <Sparkles className="w-4 h-4 text-[#FF5D5D]" />
+              <Sparkles className="w-4 h-4 text-[#FF6B70]" />
               <h3 className="text-xs font-black uppercase text-black">
                 Switch Active Testing Persona
               </h3>
@@ -145,8 +151,8 @@ export default function ProfilePage() {
                     onClick={() => handleQuickSwitch(persona)}
                     className={`p-2.5 rounded-xl border-2 border-black text-left font-black text-xs uppercase transition-all cursor-pointer flex flex-col justify-between ${
                       isActive
-                        ? 'bg-[#FFD93D] nb-shadow-sm -translate-y-0.5'
-                        : 'bg-white hover:bg-[#FDF6EC]'
+                        ? 'bg-[#FFE66D] nb-shadow-sm -translate-y-0.5'
+                        : 'bg-white hover:bg-[#FFF5EB]'
                     }`}
                   >
                     <span className="text-[10px] opacity-75">{persona.role}</span>
@@ -154,6 +160,44 @@ export default function ProfilePage() {
                   </button>
                 );
               })}
+            </div>
+          </Card>
+
+          {/* Preferences — reusable Toggle + Progress components */}
+          <Card className="p-5 bg-white space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-black">
+              <h3 className="text-xs font-black uppercase text-black">
+                Workspace Preferences
+              </h3>
+              <span className="nb-star" aria-hidden="true" />
+            </div>
+
+            <Progress
+              label="Profile Completeness"
+              value={82}
+              showValue
+              color="#42D1C3"
+            />
+
+            <div className="space-y-3 pt-1">
+              <Toggle
+                label="Email Alerts"
+                hint="Publish & schedule notifications"
+                checked={emailAlerts}
+                onChange={setEmailAlerts}
+              />
+              <Toggle
+                label="Clash Warnings"
+                hint="Highlight conflicts in the editor"
+                checked={clashWarnings}
+                onChange={setClashWarnings}
+              />
+              <Toggle
+                label="Compact Grid"
+                hint="Denser timetable cells"
+                checked={compactGrid}
+                onChange={setCompactGrid}
+              />
             </div>
           </Card>
         </div>

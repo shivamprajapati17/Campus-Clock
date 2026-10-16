@@ -97,7 +97,7 @@ export default function FreeFacultyPage() {
             ]}
           />
 
-          <div className="p-3 rounded-xl border-2 border-black bg-[#FFD93D] nb-shadow-sm flex items-center justify-between">
+          <div className="p-3 rounded-xl border-2 border-black bg-[#FFE66D] nb-shadow-sm flex items-center justify-between">
             <span className="text-xs font-black uppercase">
               Target Slot Status:
             </span>
@@ -128,7 +128,7 @@ export default function FreeFacultyPage() {
             >
               <div>
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#2DD4BF] border-2 border-black text-black font-black text-base flex items-center justify-center nb-shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-[#42D1C3] border-2 border-black text-black font-black text-base flex items-center justify-center nb-shadow-sm">
                     {fac.initials}
                   </div>
                   <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 text-green-800 border border-green-600">
@@ -173,7 +173,7 @@ export default function FreeFacultyPage() {
               {busyFaculty.map((bf) => (
                 <div
                   key={bf.id}
-                  className="p-3 rounded-xl border-2 border-black/30 bg-[#FDF6EC] flex items-center gap-2 text-xs"
+                  className="p-3 rounded-xl border-2 border-black/30 bg-[#FFF5EB] flex items-center gap-2 text-xs"
                 >
                   <span className="w-6 h-6 rounded-md bg-black/10 font-black flex items-center justify-center text-[10px]">
                     {bf.initials}

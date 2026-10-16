@@ -48,7 +48,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FDF6EC]">
+    <div className="flex min-h-screen bg-[#FFF5EB]">
       {/* Desktop & Mobile Sidebar */}
       <Sidebar />
 

@@ -46,14 +46,14 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/60 transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Content */}
       <div
         className={cn(
-          'relative w-full z-10 nb-card bg-[#FDF6EC] p-6 shadow-2xl max-h-[90vh] flex flex-col',
+          'relative w-full z-10 nb-card bg-cream p-6 nb-shadow-lg max-h-[90vh] flex flex-col',
           sizeClasses[size]
         )}
       >
@@ -64,7 +64,7 @@ export function Modal({
           </h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg border-2 border-black bg-[#FF5D5D] text-white hover:bg-[#ff3b3b] nb-shadow-sm cursor-pointer transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
+            className="p-1.5 rounded-lg border-2 border-black bg-[#FF6B70] text-white hover:bg-[#FF5459] nb-shadow-sm cursor-pointer transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
