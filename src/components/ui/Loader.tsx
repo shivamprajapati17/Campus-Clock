@@ -34,3 +34,4 @@ export function Loader({ text = 'Loading Campus Clock...', className, fullScreen
 
   return content;
 }
+

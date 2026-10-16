@@ -194,3 +194,4 @@ export default function MasterViewPage() {
     </ProtectedRoute>
   );
 }
+

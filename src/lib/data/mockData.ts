@@ -754,3 +754,4 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     created_at: '2026-02-12T09:45:00Z',
   },
 ];
+

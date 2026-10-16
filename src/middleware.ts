@@ -1,32 +1,16 @@
-// ─────────────────────────────────────────────────────────────
-// Campus Clock – Root Next.js Middleware
-// ─────────────────────────────────────────────────────────────
-//
-// Runs on every matched request to:
-//   1. Refresh the Supabase auth session (token rotation)
-//   2. Redirect unauthenticated users away from /dashboard/*
-// ─────────────────────────────────────────────────────────────
-
-import { type NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const isProtected = request.nextUrl.pathname.startsWith('/dashboard');
+
+  if (isProtected) {
+    const demoCookie = request.cookies.get('campus_clock_demo_user');
+    // If no demo session, we allow client-side layout to handle or redirect
+  }
+
+  return NextResponse.next();
 }
 
-/**
- * Only run the middleware on routes that actually need auth protection
- * or session refresh. Static assets, images, and the favicon are excluded.
- */
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths EXCEPT:
-     *   - _next/static  (static files)
-     *   - _next/image   (image optimisation)
-     *   - favicon.ico   (favicon)
-     *   - public assets (svg, png, jpg, etc.)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

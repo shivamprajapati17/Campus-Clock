@@ -191,3 +191,4 @@ export default function FreeFacultyPage() {
     </div>
   );
 }
+

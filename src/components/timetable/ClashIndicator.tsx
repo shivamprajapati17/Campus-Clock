@@ -27,3 +27,4 @@ export function ClashIndicator({ details }: ClashIndicatorProps) {
     </div>
   );
 }
+
