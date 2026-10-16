@@ -5,9 +5,8 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { Badge } from '@/components/ui/Badge';
+import { DAYS, SLOTS } from '@/lib/types';
 import {
-  DAYS,
-  SLOTS,
   MOCK_FACULTY,
   MOCK_ENTRIES_SE_A,
 } from '@/lib/data/mockData';

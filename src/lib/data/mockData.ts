@@ -10,7 +10,11 @@ import {
   ChatRoom,
   ChatMessage,
   Notification,
+  DAYS,
+  SLOTS,
 } from '@/lib/types';
+
+export { DAYS, SLOTS };
 
 // ── Demo Users ──
 export const MOCK_USERS: User[] = [
