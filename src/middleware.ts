@@ -1,16 +1,13 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  const isProtected = request.nextUrl.pathname.startsWith('/dashboard');
-
-  if (isProtected) {
-    const demoCookie = request.cookies.get('campus_clock_demo_user');
-    // If no demo session, we allow client-side layout to handle or redirect
-  }
-
-  return NextResponse.next();
+  // Refreshes the Supabase auth session and guards /dashboard while still
+  // allowing the built-in demo persona cookie.
+  return updateSession(request);
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Run on pages only — skip API routes, Next internals and static files.
+  matcher: ['/((?!api|_next/static|_next/image|.*\\..*).*)'],
 };

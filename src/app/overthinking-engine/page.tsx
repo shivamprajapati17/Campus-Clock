@@ -6,18 +6,11 @@ import {
   Brain,
   Sparkles,
   Zap,
-  Activity,
   Sliders,
-  ShieldCheck,
   Power,
   RotateCcw,
   Volume2,
   VolumeX,
-  Share2,
-  CheckCircle2,
-  AlertTriangle,
-  HelpCircle,
-  Moon,
   Compass,
   ArrowRight,
   ChevronDown,
@@ -60,7 +53,6 @@ export default function OverthinkingEnginePage() {
   const [groundingFilter, setGroundingFilter] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'logical' | 'whatif' | 'catastrophe' | 'delusion'>('all');
-  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
   const [killSwitchTriggered, setKillSwitchTriggered] = useState(false);
   const [groundingQuote, setGroundingQuote] = useState('');
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
@@ -72,7 +64,12 @@ export default function OverthinkingEnginePage() {
   useEffect(() => {
     if (soundEnabled) {
       try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioCtx =
+          window.AudioContext ||
+          (window as Window & { webkitAudioContext?: typeof AudioContext })
+            .webkitAudioContext;
+        if (!AudioCtx) throw new Error('Web Audio API unavailable');
+
         const ctx = new AudioCtx();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -113,7 +110,6 @@ export default function OverthinkingEnginePage() {
     setScenario(textToUse);
     setKillSwitchTriggered(false);
     setIsEngineRunning(true);
-    setSelectedNode(null);
   };
 
   const handleKillSwitch = () => {

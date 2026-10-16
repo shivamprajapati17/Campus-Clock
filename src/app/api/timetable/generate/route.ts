@@ -35,9 +35,12 @@ export async function POST(request: NextRequest) {
       ok: true,
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json(
-      { ok: false, error: err.message || 'Generation failed' },
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : 'Generation failed',
+      },
       { status: 500 }
     );
   }

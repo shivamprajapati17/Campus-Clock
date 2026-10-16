@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
       ok: true,
       data: newUser,
     });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json(
-      { ok: false, error: err.message || 'Server error' },
+      { ok: false, error: err instanceof Error ? err.message : 'Server error' },
       { status: 500 }
     );
   }

@@ -1,16 +1,15 @@
 import Link from 'next/link';
+import { InstitutionLogos } from '@/components/layout/InstitutionLogos';
 import {
   Clock,
   Sparkles,
   ShieldCheck,
   Zap,
   Users,
-  FileSpreadsheet,
   MessageSquare,
   CheckCircle2,
   ArrowRight,
   Calendar,
-  AlertTriangle,
   FileDown,
 } from 'lucide-react';
 
@@ -25,7 +24,7 @@ export default function LandingPage() {
           href="/overthinking-engine"
           className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#171717] text-[#FFE66D] text-[11px] font-mono hover:bg-[#FF6B70] hover:text-white transition-colors border-2 border-black"
         >
-          <span>🧠 Launch "The Overthinking Engine" ↗</span>
+          <span>🧠 Launch “The Overthinking Engine” ↗</span>
         </Link>
       </div>
 
@@ -44,6 +43,7 @@ export default function LandingPage() {
                 Buildsaur Track 1 SaaS
               </span>
             </div>
+            <InstitutionLogos size="sm" className="hidden sm:flex ml-1" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 font-black text-sm uppercase">
@@ -237,6 +237,31 @@ export default function LandingPage() {
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Institution Showcase Band ── */}
+      <section className="py-12 bg-white border-y-3 border-black px-4 md:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+          <div>
+            <span className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg border-2 border-black bg-[#42D1C3] inline-block mb-3">
+              Institution Showcase
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-black">
+              Engineered for Excellence
+            </h2>
+            <p className="text-sm sm:text-base font-bold text-black/70 mt-2 max-w-xl">
+              Campus Clock schedules every department, division and lab — built to serve
+              institutions that hold themselves to that standard.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-3 shrink-0">
+            <InstitutionLogos size="lg" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-black/60">
+              Rahul Education • Engineered for Excellence
+            </span>
           </div>
         </div>
       </section>
@@ -459,6 +484,8 @@ export default function LandingPage() {
               </span>
             </div>
           </div>
+
+          <InstitutionLogos size="md" />
 
           <div className="flex items-center gap-6 text-xs font-black uppercase">
             <Link href="/dashboard" className="hover:underline">

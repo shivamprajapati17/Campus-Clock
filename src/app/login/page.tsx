@@ -1,14 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/store/useStore';
 import { MOCK_USERS } from '@/lib/data/mockData';
+import { writeDemoSession } from '@/lib/utils';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { InstitutionLogos } from '@/components/layout/InstitutionLogos';
 import {
   Clock,
   Mail,
@@ -20,41 +23,46 @@ import {
 } from 'lucide-react';
 import type { User, UserRole } from '@/lib/types';
 
+/** 1-click demo personas shown on the login screen. */
+const DEMO_CREDENTIALS: Record<UserRole, { email: string; password: string }> = {
+  management: { email: 'management@campus.edu', password: 'admin123' },
+  hod: { email: 'hod.cmpn@campus.edu', password: 'hod123' },
+  teacher: { email: 'teacher.a1@campus.edu', password: 'teach123' },
+  student: { email: 'student.a1@campus.edu', password: 'stud123' },
+};
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useStore();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Deep links such as /login?role=hod prefill straight from the query param,
+  // so no state-setting effect is needed.
+  const roleParam = searchParams.get('role') as UserRole | null;
+  const initialCreds = roleParam ? DEMO_CREDENTIALS[roleParam] : undefined;
+
+  // Land the user back on whatever protected page sent them here. Only
+  // same-origin relative paths are honoured, so this can't be an open redirect.
+  const rawNext = searchParams.get('next');
+  const nextPath = rawNext && /^\/(?!\/)/.test(rawNext) ? rawNext : '/dashboard';
+
+  const [email, setEmail] = useState(initialCreds?.email ?? '');
+  const [password, setPassword] = useState(initialCreds?.password ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(
+    initialCreds ? roleParam : null
+  );
 
-  useEffect(() => {
-    const roleParam = searchParams.get('role') as UserRole;
-    if (roleParam) {
-      handleQuickSelectRole(roleParam);
-    }
-  }, [searchParams]);
-
-  const handleQuickSelectRole = (role: UserRole) => {
+  const handleQuickSelectRole = useCallback((role: UserRole) => {
     setSelectedRole(role);
     setError('');
-    if (role === 'management') {
-      setEmail('management@campus.edu');
-      setPassword('admin123');
-    } else if (role === 'hod') {
-      setEmail('hod.cmpn@campus.edu');
-      setPassword('hod123');
-    } else if (role === 'teacher') {
-      setEmail('teacher.a1@campus.edu');
-      setPassword('teach123');
-    } else if (role === 'student') {
-      setEmail('student.a1@campus.edu');
-      setPassword('stud123');
+    const creds = DEMO_CREDENTIALS[role];
+    if (creds) {
+      setEmail(creds.email);
+      setPassword(creds.password);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,18 +70,43 @@ function LoginForm() {
     setError('');
 
     try {
-      // Find matching mock user or authenticate
-      const matchedUser = MOCK_USERS.find(
-        (u) => u.email.toLowerCase() === email.trim().toLowerCase()
-      );
+      let loggedInUser: User | null = null;
 
-      let loggedInUser: User;
+      // 1. Prefer a real Supabase session when the project is configured.
+      if (isSupabaseConfigured()) {
+        try {
+          const supabase = createClient();
+          const { data } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
 
-      if (matchedUser) {
-        loggedInUser = matchedUser;
-      } else {
-        // Fallback for custom user testing
-        loggedInUser = {
+          if (data?.user) {
+            const meta = (data.user.user_metadata ?? {}) as Record<string, unknown>;
+            loggedInUser = {
+              id: data.user.id,
+              name: (meta.name as string) || email.split('@')[0],
+              email: data.user.email || email.trim(),
+              role: (meta.role as UserRole) || selectedRole || 'student',
+              department_id: (meta.department_id as string) ?? null,
+              division_id: (meta.division_id as string) ?? null,
+              faculty_initial: (meta.faculty_initial as string) ?? null,
+              must_change_password: false,
+              created_at: data.user.created_at,
+            };
+          }
+        } catch {
+          // Auth/network failure — fall through to the built-in demo personas.
+        }
+      }
+
+      // 2. Fall back to the built-in demo personas so the demo always works.
+      if (!loggedInUser) {
+        const matchedUser = MOCK_USERS.find(
+          (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+        );
+
+        loggedInUser = matchedUser ?? {
           id: 'user-custom-' + Date.now(),
           name: email.split('@')[0],
           email: email.trim(),
@@ -86,17 +119,13 @@ function LoginForm() {
         };
       }
 
-      // Save user to Zustand Store
+      // Persist the session for the store, SSR and middleware
       setUser(loggedInUser);
+      writeDemoSession(loggedInUser);
 
-      // Save user to Demo Cookie for SSR & Middleware
-      document.cookie = `campus_clock_demo_user=${encodeURIComponent(
-        JSON.stringify(loggedInUser)
-      )}; path=/; max-age=604800`;
-
-      // Redirect to dashboard
+      // Redirect to the requested page (or the dashboard by default)
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push(nextPath);
       }, 400);
     } catch {
       setError('Invalid login credentials. Please check or click a demo role.');
@@ -121,6 +150,8 @@ function LoginForm() {
           </span>
         </div>
       </Link>
+
+      <InstitutionLogos size="md" className="mb-6" />
 
       <Card className="w-full max-w-lg bg-white p-6 sm:p-8">
         <div className="text-center mb-6">

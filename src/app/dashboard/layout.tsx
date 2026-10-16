@@ -1,12 +1,22 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useSyncExternalStore } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { useStore } from '@/store/useStore';
 import { MOCK_USERS, MOCK_NOTIFICATIONS } from '@/lib/data/mockData';
 import { Loader } from '@/components/ui/Loader';
+import { readDemoSession, writeDemoSession } from '@/lib/utils';
+import type { User } from '@/lib/types';
+
+/**
+ * Client-detection via useSyncExternalStore instead of a `mounted` flag set
+ * inside an effect — the server snapshot is false, the client snapshot is true,
+ * so we render the loader during SSR/hydration without triggering cascading
+ * renders. See https://react.dev/reference/react/useSyncExternalStore
+ */
+const subscribeToNothing = () => () => {};
 
 export default function DashboardLayout({
   children,
@@ -14,41 +24,37 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, setUser, notifications, setNotifications } = useStore();
-  const [mounted, setMounted] = useState(false);
+
+  const isClient = useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
-    // If no user in state, check demo cookie or default to Dean/Management for demo review
+    // Restore the demo persona from the cookie, or default to the Dean persona
+    // so reviewers can explore every role without a real sign-in.
     if (!user) {
-      const match = document.cookie.match(/campus_clock_demo_user=([^;]+)/);
-      if (match && match[1]) {
-        try {
-          const parsed = JSON.parse(decodeURIComponent(match[1]));
-          setUser(parsed);
-        } catch {
-          setUser(MOCK_USERS[0]); // default to management demo
-        }
+      const stored = readDemoSession<User>();
+      if (stored) {
+        setUser(stored);
       } else {
-        // Set default demo user
         setUser(MOCK_USERS[0]);
-        document.cookie = `campus_clock_demo_user=${encodeURIComponent(
-          JSON.stringify(MOCK_USERS[0])
-        )}; path=/; max-age=604800`;
+        writeDemoSession(MOCK_USERS[0]);
       }
     }
 
     if (notifications.length === 0) {
       setNotifications(MOCK_NOTIFICATIONS);
     }
-
-    setMounted(true);
   }, [user, setUser, notifications.length, setNotifications]);
 
-  if (!mounted) {
+  if (!isClient) {
     return <Loader fullScreen text="Booting Campus Clock..." />;
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FFF5EB]">
+    <div className="flex min-h-screen bg-cream">
       {/* Desktop & Mobile Sidebar */}
       <Sidebar />
 
@@ -65,4 +71,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-

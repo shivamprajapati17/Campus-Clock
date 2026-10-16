@@ -15,6 +15,43 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
+// ─────────────────────────────────────────────────────────────
+// Demo session cookie helpers
+//
+// Isolated here so components never mutate `document` directly,
+// which keeps them pure and SSR-safe.
+// ─────────────────────────────────────────────────────────────
+
+export const DEMO_SESSION_COOKIE = 'campus_clock_demo_user';
+
+/** Persist the active demo persona for one week. */
+export function writeDemoSession(user: unknown): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${DEMO_SESSION_COOKIE}=${encodeURIComponent(
+    JSON.stringify(user)
+  )}; path=/; max-age=604800`;
+}
+
+/** Read the persisted demo persona, or null when absent/unparseable. */
+export function readDemoSession<T>(): T | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(
+    new RegExp(`${DEMO_SESSION_COOKIE}=([^;]+)`)
+  );
+  if (!match || !match[1]) return null;
+  try {
+    return JSON.parse(decodeURIComponent(match[1])) as T;
+  } catch {
+    return null;
+  }
+}
+
+/** Clear the demo persona cookie (sign out). */
+export function clearDemoSession(): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${DEMO_SESSION_COOKIE}=; path=/; max-age=0`;
+}
+
 /**
  * Return the human-readable time range for a slot number.
  * e.g. formatTime(1) → "09:00 – 10:00"

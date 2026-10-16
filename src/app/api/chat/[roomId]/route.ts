@@ -39,9 +39,12 @@ export async function POST(
       ok: true,
       data: newMsg,
     });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json(
-      { ok: false, error: err.message },
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : 'Failed to post message',
+      },
       { status: 500 }
     );
   }

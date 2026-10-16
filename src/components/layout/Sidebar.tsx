@@ -4,8 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
-import { cn } from '@/lib/utils';
+import { cn, clearDemoSession } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
+import { InstitutionLogos } from '@/components/layout/InstitutionLogos';
 import {
   LayoutDashboard,
   Calendar,
@@ -28,8 +29,8 @@ export function Sidebar() {
   const { user, clearUser, sidebarOpen, toggleSidebar } = useStore();
 
   const handleLogout = () => {
-    // Clear demo cookies and zustand
-    document.cookie = 'campus_clock_demo_user=; path=/; max-age=0';
+    // Clear the demo session and zustand state
+    clearDemoSession();
     clearUser();
     router.push('/login');
   };
@@ -122,28 +123,34 @@ export function Sidebar() {
       >
         {/* Top: Brand Header */}
         <div>
-          <div className="p-5 border-b-3 border-black bg-[#FFE66D] flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-black border-2 border-white flex items-center justify-center text-[#FFE66D] shadow-md">
-                <Clock className="w-6 h-6 stroke-[2.5]" />
-              </div>
-              <div>
-                <h1 className="font-black text-lg tracking-tight uppercase text-black leading-tight">
-                  Campus Clock
-                </h1>
-                <span className="text-[10px] font-black uppercase tracking-widest text-black/75">
-                  SaaS Timetabler
-                </span>
-              </div>
-            </Link>
+          <div className="p-5 border-b-3 border-black bg-[#FFE66D] flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <Link href="/dashboard" className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-black border-2 border-white flex items-center justify-center text-[#FFE66D] shadow-md">
+                  <Clock className="w-6 h-6 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h1 className="font-black text-lg tracking-tight uppercase text-black leading-tight">
+                    Campus Clock
+                  </h1>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black/75">
+                    SaaS Timetabler
+                  </span>
+                </div>
+              </Link>
 
-            {/* Mobile close button */}
-            <button
-              onClick={toggleSidebar}
-              className="p-1 rounded-lg border-2 border-black bg-white md:hidden text-black"
-            >
-              <X className="w-5 h-5" />
-            </button>
+              {/* Mobile close button */}
+              <button
+                onClick={toggleSidebar}
+                aria-label="Close navigation"
+                className="p-1 rounded-lg border-2 border-black bg-white md:hidden text-black"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Institution marks */}
+            <InstitutionLogos size="sm" className="justify-start" />
           </div>
 
           {/* User badge preview */}

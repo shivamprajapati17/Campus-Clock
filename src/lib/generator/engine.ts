@@ -192,10 +192,17 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
     day: number,
     slot: number,
     slotsNeeded: number,
-    divisionStrength: number
+    divisionStrength: number,
+    isLab: boolean
   ): Room | null {
+    // Practicals run in batches, so a lab only has to seat one batch of the
+    // division. Lectures and tutorials need a hall that fits the whole class.
+    const requiredCapacity = isLab
+      ? Math.ceil(divisionStrength / 2)
+      : divisionStrength;
+
     for (const room of candidateRooms) {
-      if (room.capacity < divisionStrength) continue;
+      if (room.capacity < requiredCapacity) continue;
 
       let allFree = true;
       for (let s = slot; s < slot + slotsNeeded; s++) {
@@ -244,7 +251,14 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
         if (!feasible) continue;
 
         // Find a suitable room
-        const room = findRoom(candidateRooms, day, slot, task.slotsNeeded, input.division.strength);
+        const room = findRoom(
+          candidateRooms,
+          day,
+          slot,
+          task.slotsNeeded,
+          input.division.strength,
+          task.needsLab
+        );
         if (!room) continue;
 
         // ── Place the task ──────────────────────────────────

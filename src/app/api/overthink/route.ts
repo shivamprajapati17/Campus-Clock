@@ -187,9 +187,12 @@ export async function POST(request: NextRequest) {
       ok: true,
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json(
-      { ok: false, error: err.message || 'Engine calculation failed' },
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : 'Engine calculation failed',
+      },
       { status: 500 }
     );
   }

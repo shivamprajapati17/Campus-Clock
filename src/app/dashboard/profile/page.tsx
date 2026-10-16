@@ -11,6 +11,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Toggle } from '@/components/ui/Toggle';
 import { Progress } from '@/components/ui/Progress';
 import { MOCK_USERS } from '@/lib/data/mockData';
+import { writeDemoSession, clearDemoSession } from '@/lib/utils';
 import type { User, UserRole } from '@/lib/types';
 import {
   User as UserIcon,
@@ -45,13 +46,11 @@ export default function ProfilePage() {
 
   const handleQuickSwitch = (persona: User) => {
     setUser(persona);
-    document.cookie = `campus_clock_demo_user=${encodeURIComponent(
-      JSON.stringify(persona)
-    )}; path=/; max-age=604800`;
+    writeDemoSession(persona);
   };
 
   const handleSignOut = () => {
-    document.cookie = 'campus_clock_demo_user=; path=/; max-age=0';
+    clearDemoSession();
     clearUser();
     router.push('/login');
   };
