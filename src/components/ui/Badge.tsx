@@ -26,19 +26,19 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const colorMap: Record<string, string> = {
-    primary: 'bg-[#FF6B70] text-white',
-    secondary: 'bg-[#A78BFA] text-black',
-    accent: 'bg-[#42D1C3] text-black',
-    warning: 'bg-[#FFE66D] text-black',
-    yellow: 'bg-[#FFE66D] text-black',
-    blue: 'bg-[#FF6B70] text-black',
-    orange: 'bg-[#FFA477] text-black',
-    outline: 'bg-white text-black',
-    // Roles
-    management: 'bg-[#FF6B70] text-white',
-    hod: 'bg-[#A78BFA] text-black',
-    teacher: 'bg-[#42D1C3] text-black',
-    student: 'bg-[#FFE66D] text-black',
+    primary: 'bg-[#2E7D32] text-white',
+    secondary: 'bg-[#80CBC4] text-[#1B2E1F]',
+    accent: 'bg-[#4DB6AC] text-[#1B2E1F]',
+    warning: 'bg-[#FFD54F] text-[#1B2E1F]',
+    yellow: 'bg-[#FFD54F] text-[#1B2E1F]',
+    blue: 'bg-[#4DB6AC] text-[#1B2E1F]',
+    orange: 'bg-[#A5D6A7] text-[#1B2E1F]',
+    outline: 'bg-white text-[#1B2E1F]',
+    // Role badges — Management deep green, HOD teal, Teacher lime, Student yellow.
+    management: 'bg-[#1B5E20] text-white',
+    hod: 'bg-[#00796B] text-white',
+    teacher: 'bg-[#7CB342] text-[#1B2E1F]',
+    student: 'bg-[#FBC02D] text-[#1B2E1F]',
   };
 
   const sizeStyles = {
@@ -50,7 +50,7 @@ export function Badge({
     <span
       className={cn(
         'nb-badge inline-flex items-center gap-1 font-black uppercase tracking-wider',
-        colorMap[color] || 'bg-[#FFE66D] text-black',
+        colorMap[color] || 'bg-[#FFD54F] text-black',
         sizeStyles[size],
         className
       )}

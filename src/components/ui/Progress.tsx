@@ -20,7 +20,7 @@ export function Progress({
   value,
   label,
   showValue = false,
-  color = '#FF6B70',
+  color = '#BF360C',
   className,
 }: ProgressProps) {
   const clamped = Math.max(0, Math.min(100, value));

@@ -8,8 +8,8 @@ and students.**
 |---|---|
 | **Live application** | <https://campusclock.vercel.app> |
 | **Repository** | <https://github.com/shivamprajapati17/Campus-Clock> |
-| **Stack** | Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Zustand · Supabase |
-| **Guide version** | Matches commit `188fb5e` |
+| **Stack** | Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Zustand · Supabase · jsPDF/SheetJS |
+| **Guide version** | Round 2 — Bulbasaur theme, four-language assistant, ECS B seed data |
 
 ---
 
@@ -27,7 +27,8 @@ and students.**
 10. [API reference](#10-api-reference)
 11. [Running it locally](#11-running-it-locally)
 12. [What is real and what is simulated](#12-what-is-real-and-what-is-simulated)
-13. [Verification status](#13-verification-status)
+13. [Round 2 — theme, Sprout assistant, architecture](#13-round-2--theme-sprout-assistant-architecture)
+14. [Verification status](#14-verification-status)
 
 ---
 
@@ -133,9 +134,11 @@ are scoped, not merely hidden.
 
 ### Landing page — `/`
 
-Marketing overview with the value proposition, a live slice of the SE-A
-timetable, quick links to the demo accounts, and the entry point into the
-Overthinking Engine.
+Marketing overview with the Round 2 tagline ("Grow your perfect schedule 🌱"),
+an SVG vine border, leaf motifs, an inline Bulbasaur mascot, a live slice of the
+**ECS B** timetable, quick links to the demo accounts, and the entry point into
+the Overthinking Engine. The floating 🌱 **Sprout assistant** is available on
+every route, including this one.
 
 ### Dashboard — `/dashboard`
 
@@ -154,9 +157,11 @@ schedules only. Each card links to the grid, the editor and the export centre.
 
 ### Timetable grid — `/dashboard/timetable/[id]`
 
-The read-only weekly matrix: five days across, seven teaching slots down, with a
-striped lunch break between slots 4 and 5. Each cell shows the subject code,
-faculty initials and room. Locked periods are marked.
+The read-only weekly matrix: five days across, eight periods down, with each
+day's break shown in its own cell (P4 on Mon/Wed/Fri for ECS B, P6 on Tue/Thu).
+Each cell shows the subject code, faculty initials, room and — where a lab splits
+the class — its batch, so parallel batch sessions stack inside one period.
+Locked periods are marked.
 
 ### Live editor — `/dashboard/editor/[id]`
 
@@ -164,7 +169,9 @@ Drag any period to another slot and the two swap. The banner above the grid
 re-validates on every move and turns red with the specific conflict if you create
 one — double-booked faculty, colliding rooms, or a class scheduled twice at once.
 Locked cells refuse to be displaced. **Undo** steps back through your move
-history. **Save Changes** and **Publish** complete the flow.
+history. **Save Changes** writes the grid to local storage, so the edits survive
+navigation and a reload; **Publish** (Management and HOD only) flips the status
+that students and teachers are allowed to see.
 
 ### Auto generator — `/dashboard/generate`
 
@@ -202,7 +209,8 @@ sick. Teachers see it too, so they can arrange their own swaps.
 
 Four channels: campus-wide announcements, the department faculty room, a class
 discussion, and the HOD & Management council. Messages are colour-coded by the
-sender's role.
+sender's role and are kept in local storage, so a refresh no longer wipes the
+conversation.
 
 ### Exports & PDF — `/dashboard/exports`
 
@@ -213,7 +221,9 @@ Pick a timetable and a format:
 - **Excel (.xlsx)** — the same matrix as a worksheet, via SheetJS.
 - **JSON** — the raw timetable object for integration.
 
-There is also a **Send to Printer** action using the browser's print pipeline.
+Every format is generated from the timetable you selected, using its actual
+entries — the same matrix the page previews. There is also a **Send to Printer**
+action using the browser's print pipeline.
 
 ### My Profile — `/dashboard/profile`
 
@@ -416,26 +426,42 @@ apps/                              (single Next.js application)
 ├─ src/lib/
 │  ├─ generator/engine.ts          Backtracking scheduler
 │  ├─ generator/validator.ts       Clash detector
+│  ├─ export/timetableExport.ts    PDF / Excel / JSON from a real timetable
+│  ├─ faculty.ts                   "Who is free right now" lookups
+│  ├─ chatTools.ts                 Chatbot intents, free-faculty + timetable
+│  │                               tools, four-language answers, fallbacks
+│  ├─ useStoredState.ts            Generic localStorage-backed React state
 │  ├─ data/mockData.ts             Departments, divisions, subjects, faculty,
 │  │                               rooms, timetables, chat, notifications
 │  ├─ supabase/{client,server,middleware}.ts
 │  ├─ types.ts                     Domain types + constants
 │  └─ utils.ts                     cn(), session cookie, slot formatting
+├─ src/components/Chatbot.tsx      Floating 🌱 assistant widget (EN/HI/ES/FR)
+├─ src/app/api/chat/route.ts       Assistant endpoint (tools + optional LLM)
 ├─ src/store/
 │  ├─ useStore.ts                  Session, notifications, UI state
-│  └─ useMasterData.ts             Departments, divisions, directory (persisted)
+│  ├─ useMasterData.ts             Departments, divisions, directory (persisted)
+│  └─ useTimetableData.ts          Timetables + entries (persisted)
 ├─ src/middleware.ts               Route guard
+├─ android/                        Signed WebView APK + build script
 └─ supabase/schema.sql             Database schema
 ```
 
-**Design language.** A Neo-Brutalist system: warm cream paper (`#FFF5EB`), thick
-3px black borders, hard unblurred offset shadows, and a role palette — coral
-`#FF6B70` for Management, lavender `#A78BFA` for HOD, turquoise `#42D1C3` for
-Teacher, butter yellow `#FFE66D` for Student.
+**Design language.** A Bulbasaur garden system: fresh leaf paper (`#F1F8E9`),
+deep green ink (`#1B2E1F`) borders, soft leaf-offset shadows (`4px 4px 0 #1B5E20`)
+and 16px radii. Primary green `#2E7D32`, teal accent `#4DB6AC`, sunflower
+`#FFD54F`, danger `#BF360C` for clashes only. Role badges: Management `#1B5E20`,
+HOD `#00796B`, Teacher `#7CB342`, Student `#FBC02D`. Grid tints encode the
+period type — lecture `#DCEDC8`, lab `#B2DFDB`, tutorial `#FFF9C4`, break
+sunflower. All tokens live in `src/app/globals.css`.
 
-**State.** Two Zustand stores. `useStore` holds the session, notifications and UI
-flags. `useMasterData` holds the institution directory and is the one that
-persists.
+**State.** Three Zustand stores. `useStore` holds the session, notifications and
+UI flags. `useMasterData` holds the institution directory. `useTimetableData`
+holds the timetables and their grid entries, and is the one the editor, the
+generator and the export centre all write to. Both data stores persist to
+`localStorage` (`campus_clock_master_data_v2`, `campus_clock_timetables_v1`), and
+the chat uses the same mechanism through `useStoredState`
+(`campus_clock_chat_v1`).
 
 ---
 
@@ -451,6 +477,8 @@ uses.
 | `GET` | `/api/timetable` | List timetables; filter by `department_id`, `division_id`, `status` |
 | `POST` | `/api/timetable/generate` | Run the engine for a division; returns entries and clashes |
 | `GET` | `/api/faculty/free` | Free faculty for `?day=` and `?slot=` |
+| `GET` | `/api/chat` | Assistant capabilities: languages + published timetables |
+| `POST` | `/api/chat` | Multilingual assistant reply (`messages`, `lang`, `role`, `context`) |
 | `GET` | `/api/chat/[roomId]` | Messages in a room |
 | `POST` | `/api/chat/[roomId]` | Post a message to a room |
 | `GET` | `/api/notifications` | Notification stream |
@@ -495,6 +523,30 @@ security.
 new production deployments automatically — it must be re-pointed after a deploy,
 or promoted to the project's production domain.
 
+### The Android app
+
+`android/` holds a small WebView shell so the portal can be installed as a real
+Android app. It needs JDK 17 and an Android SDK with build-tools 34 and platform
+34, but no Gradle:
+
+```bash
+ANDROID_SDK=/path/to/android-sdk JAVA_HOME=/path/to/jdk-17 ./android/build-apk.sh
+# → android/CampusClock.apk
+```
+
+The script compiles resources with `aapt2`, dexes the shell with `d8`, aligns
+with `zipalign` and signs with `apksigner`. The signed output is
+`android/CampusClock.apk` (package `com.campusclock.app`, minSdk 23, target 34);
+`apksigner verify` reports valid v1, v2 and v3 signatures.
+
+The shell loads `https://campusclock.vercel.app`, so it always shows the deployed
+build — change `HOME_URL` in `android/app/src/com/campusclock/app/MainActivity.java`
+to point it somewhere else. It also exposes a small `NativeBridge` that saves
+PDF/Excel downloads to the device's Downloads folder instead of dropping them in
+the WebView. A keystore is generated on the first build at
+`android/.android-signing.keystore`; it is not committed, and you must keep the
+same one to ship updates Android will treat as the same app.
+
 ---
 
 ## 12. What is real and what is simulated
@@ -512,40 +564,136 @@ of it are.
 - ✅ **Master data editing.** Departments, divisions and the user directory can
   genuinely be created, edited and deleted, and the changes persist across
   reloads.
-- ✅ **Exports.** PDF, Excel and JSON files are produced by real libraries.
+- ✅ **Exports.** PDF, Excel and JSON files are produced by real libraries from
+  the actual entries of the timetable you selected.
+- ✅ **Timetable editing and publishing.** Creating a timetable, editing its grid
+  and publishing it all work, and persist across navigation and reloads.
 - ✅ **Permissions.** Role gates and HOD scoping are enforced in the code, not
   just hidden in the UI.
 
 **In-app data, not a live database:**
 
-- ⚠️ **Timetables, subjects, faculty, rooms, chat and notifications** are served
-  from `src/lib/data/mockData.ts`. The `schema.sql` tables exist, but the
-  application does not yet read or write them. Reloading the page resets chat
-  messages and unsaved grid edits.
+- ⚠️ **Timetables, subjects, faculty, rooms, chat and notifications** start from
+  `src/lib/data/mockData.ts`. The `schema.sql` tables exist, but the application
+  does not yet read or write them.
+- ⚠️ **Timetable edits, chat messages and master data live in `localStorage`.**
+  They survive reloads on that browser but are not shared between users or
+  devices, and clearing site data restores the seed content.
 - ⚠️ **Master-data edits are per-browser** (`localStorage`). They are not shared
   between users or devices. Making them campus-wide means wiring
   departments/divisions to Supabase — the schema is already there.
-- ⚠️ **The export documents** render a representative sample matrix rather than
-  reading the grid you are currently looking at.
 - ⚠️ **The profile page's password change** updates the UI only; it does not call
   Supabase. The persona switcher writes a demo session cookie and is intended for
   reviewers.
 
-**Verification status at commit `188fb5e`:** `tsc --noEmit` clean, `eslint .`
-reports 0 errors, `next build` succeeds, and all twelve routes were exercised in
-a headless browser with zero console or network errors — locally and on the live
-Vercel deployment. The tests above cover department and division creation,
-editing, deletion with cascade, duplicate rejection, reload persistence, user
-editing, sign-out, and HOD scoping.
+---
+
+## 13. Round 2 — theme, Sprout assistant, architecture
+
+### Bulbasaur theme
+
+The garden palette in §9 is applied on every route: the landing page carries a
+"Grow your perfect schedule 🌱" tagline, an SVG vine border and an inline
+Bulbasaur mascot; the timetable grid tints lectures, labs, tutorials and breaks;
+role badges use the four role colours. Text is Poppins via `next/font/google`.
+Light-green tints meet AA contrast against `#1B2E1F` ink, and the layout was
+checked at 375px.
+
+### Sprout — the multilingual assistant
+
+`src/components/Chatbot.tsx` renders the floating 🌱 button on every page and is
+mounted once in `src/app/layout.tsx`. It supports English, हिन्दी, Español and
+Français, with a language dropdown, quick-reply chips, a disabled-while-loading
+send button and five offline answers per language.
+
+Requests go to `POST /api/chat` with `{ messages, lang, role, context }`.
+`src/lib/chatTools.ts` detects the intent (free faculty, today's timetable,
+publishing, exports, permissions) and answers from the real published timetables
+and faculty roster — so the bot is useful with no API key at all. When
+`ANTHROPIC_API_KEY` is set, the route adds that tool context to the system prompt
+and asks Claude to phrase the reply; any failure falls back to the local answer.
+The key is read only in the server route and is never prefixed with
+`NEXT_PUBLIC_`. `GET /api/chat` reports the languages and published timetables the
+bot can see.
+
+### Architecture
+
+![Campus Clock system architecture](campus-clock-architecture.png)
+
+`docs/campus-clock-architecture.png` (exported from a code-drawn SVG/HTML board)
+shows the layers, the numbered chatbot flow (1 user → 2 widget → 3 `/api/chat` →
+4 timetable tools → 5 optional LLM → 6 reply) and the key server-side and
+fallback decisions.
+
+**Two-minute explanation script.**
+
+| Time | Content |
+|---|---|
+| 0:00–0:20 | The problem: manual timetables collide — teachers, rooms, labs, whole divisions. |
+| 0:20–1:00 | Walk the diagram: users → Next.js frontend → API routes and the backtracking engine → data, with exports as a first-class path. |
+| 1:00–1:40 | One chatbot request step by step: "Free teachers now" → intent → free-faculty tool over published timetables → reply, repeated in Hindi. |
+| 1:40–2:00 | Security and resilience: the API key stays server-side, and the local answer engine means the demo works offline. |
+
+### ECS B — real seeded class
+
+The First-Year **ECS B** division is transcribed from the official sheet
+(`ECS B.pdf`): Humanities & Applied Sciences, 13 real teachers, 12 course-coded
+subjects, 10 rooms and a published 38-period timetable. The sheet is eight
+periods wide with a moving lunch period (P4 on Mon/Wed/Fri, P6 on Tue/Thu), and
+lab batches run in parallel — so `TimetableEntry` gained an optional `batch` and
+`Timetable` gained per-day `breaks`, and the validator treats distinct batches as
+parallel rather than as clashes. One-hour labs (Engineering Chemistry Lab) are
+allowed alongside two-hour labs.
+
+---
+
+## 14. Verification status
+
+**Verified on the current working tree:** `tsc --noEmit` clean, `eslint .` reports
+0 problems, and `next build` succeeds with no ignored type errors (the
+`typescript.ignoreBuildErrors` escape hatch was removed).
+
+All fourteen page routes were exercised in headless Chrome at **1440px and
+390px** with **zero console errors and no horizontal overflow**. The Sprout
+widget was present on every route and completed a real round-trip from the UI
+(question → `/api/chat` → reply bubble) on `/dashboard`.
+
+API checks against the production build: `POST /api/seed` reports 41 users,
+9 departments, 23 divisions, 54 subjects, 32 faculty, 15 rooms and 6 timetables,
+with **0 clashes** on every seeded timetable — including **ECS B with 38
+periods**; `GET /api/timetable` returns all six with their breaks;
+`POST /api/timetable/generate` succeeds for both `div-ecs-b` (27 entries, 0
+clashes) and `div-se-a` (20 entries, 0 clashes) and returns 404 for an unknown
+division; `GET /api/faculty/free` returns the free-teacher list for any day and
+period; `/api/chat` answers in English, Hindi, Spanish and French for the free,
+timetable, export, publish, permissions and greeting intents; `/api/auth/login`
+accepts a demo persona and rejects a bad password with 401; `/api/notifications`,
+`/api/chat/[roomId]` (GET + POST) and `/api/overthink` all respond.
+
+Exports were checked through the UI by capturing the blobs the app generates:
+the PDF starts with `%PDF` (18 KB), the Excel file is a real ZIP container
+(`PK\x03\x04`, 20 KB) and the JSON parses to the **ECS B** timetable — division
+`ECS B (FE)`, department `HAS`, term `2026-27 (Sem I)`, 38 entries, five per-day
+breaks (1/P4, 2/P6, 3/P4, 4/P6, 5/P4), all twelve course codes and eleven
+scheduled teachers.
+
+Contrast was measured with the WCAG formula: every text/background pair in the
+theme is ≥ 4.5:1 (AA normal text), including the role badges and the grid tints.
+`apksigner verify` accepts the built APK under the v1, v2 and v3 schemes.
+
+Earlier rounds also covered department and division creation, editing, deletion
+with cascade, duplicate rejection, reload persistence, user editing, sign-out,
+HOD scoping, the free-faculty lookup correctly excluding a busy teacher, and an
+editor edit that survives a reload.
 
 **Known rough edges:**
 
-- 46 ESLint *warnings* remain across untouched files — all `no-unused-vars` from
-  leftover imports. They do not fail the build.
 - The profile page resolves your department from the master store, so an account
   whose department cannot be matched shows "All Departments".
 - The generator schedules one division per run; there is no whole-campus batch
   mode yet.
+- The Android shell loads the deployed URL, so it cannot be used offline and it
+  does not pick up local changes until they are deployed.
 
 ---
 

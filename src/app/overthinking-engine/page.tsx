@@ -265,55 +265,55 @@ export default function OverthinkingEnginePage() {
     switch (type) {
       case 'logical':
         return {
-          border: 'border-[#42D1C3]',
+          border: 'border-[#4DB6AC]',
           bg: 'bg-white',
-          badge: 'bg-[#42D1C3] text-black',
-          strip: 'bg-[#42D1C3]',
-          titleColor: 'text-[#171717]',
+          badge: 'bg-[#4DB6AC] text-black',
+          strip: 'bg-[#4DB6AC]',
+          titleColor: 'text-[#1B2E1F]',
         };
       case 'whatif':
         return {
-          border: 'border-[#A78BFA]',
+          border: 'border-[#80CBC4]',
           bg: 'bg-white',
-          badge: 'bg-[#A78BFA] text-black',
-          strip: 'bg-[#A78BFA]',
-          titleColor: 'text-[#171717]',
+          badge: 'bg-[#80CBC4] text-black',
+          strip: 'bg-[#80CBC4]',
+          titleColor: 'text-[#1B2E1F]',
         };
       case 'catastrophe':
         return {
-          border: 'border-[#FF6B70]',
+          border: 'border-[#BF360C]',
           bg: 'bg-white',
-          badge: 'bg-[#FF6B70] text-white',
-          strip: 'bg-[#FF6B70]',
-          titleColor: 'text-[#171717]',
+          badge: 'bg-[#BF360C] text-white',
+          strip: 'bg-[#BF360C]',
+          titleColor: 'text-[#1B2E1F]',
         };
       case 'delusion':
         return {
-          border: 'border-[#FFA477]',
+          border: 'border-[#A5D6A7]',
           bg: 'bg-white',
-          badge: 'bg-[#FFA477] text-black',
-          strip: 'bg-[#FFA477]',
-          titleColor: 'text-[#171717]',
+          badge: 'bg-[#A5D6A7] text-black',
+          strip: 'bg-[#A5D6A7]',
+          titleColor: 'text-[#1B2E1F]',
         };
       default:
         return {
-          border: 'border-[#171717]',
+          border: 'border-[#1B2E1F]',
           bg: 'bg-white',
-          badge: 'bg-[#171717] text-white',
-          strip: 'bg-[#171717]',
-          titleColor: 'text-[#171717]',
+          badge: 'bg-[#1B2E1F] text-white',
+          strip: 'bg-[#1B2E1F]',
+          titleColor: 'text-[#1B2E1F]',
         };
     }
   };
 
   const anxietyColor = (type: NodeData['type']) =>
     type === 'logical'
-      ? '#42D1C3'
+      ? '#4DB6AC'
       : type === 'whatif'
-      ? '#A78BFA'
+      ? '#80CBC4'
       : type === 'catastrophe'
-      ? '#FF6B70'
-      : '#FFA477';
+      ? '#BF360C'
+      : '#A5D6A7';
 
   return (
     <div className="min-h-screen bg-cream text-ink relative overflow-x-hidden">
@@ -323,7 +323,7 @@ export default function OverthinkingEnginePage() {
           className="absolute inset-0 opacity-[0.10]"
           style={{
             backgroundImage:
-              'radial-gradient(#171717 1px, transparent 1px)',
+              'radial-gradient(#1B2E1F 1px, transparent 1px)',
             backgroundSize: '26px 26px',
           }}
         />
@@ -332,14 +332,14 @@ export default function OverthinkingEnginePage() {
       {/* ── Top Navigation Bar ── */}
       <header className="relative z-20 border-b-3 border-black bg-white px-4 sm:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#A78BFA] border-3 border-black nb-shadow-sm flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-[#80CBC4] border-3 border-black nb-shadow-sm flex items-center justify-center">
             <Brain className="w-5 h-5 text-black stroke-[2.2]" />
           </div>
           <div>
             <span className="font-black text-sm sm:text-base tracking-tight uppercase text-black block leading-none">
               The Overthinking Engine
             </span>
-            <span className="block text-[9px] uppercase tracking-widest text-[#7C5CF0] font-black">
+            <span className="block text-[9px] uppercase tracking-widest text-[#2E7D32] font-black">
               Cognitive Distortion Simulator v2.4
             </span>
           </div>
@@ -351,7 +351,7 @@ export default function OverthinkingEnginePage() {
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer nb-shadow-sm ${
               soundEnabled
-                ? 'bg-[#42D1C3] text-black'
+                ? 'bg-[#4DB6AC] text-black'
                 : 'bg-white text-black/60 hover:text-black'
             }`}
             title="Toggle 432Hz Ambient Sound"
@@ -364,7 +364,7 @@ export default function OverthinkingEnginePage() {
 
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-lg border-2 border-black bg-[#FFE66D] hover:bg-[#F2D94A] text-xs font-black text-black transition-all flex items-center gap-1.5 nb-shadow-sm"
+            className="px-3 py-1.5 rounded-lg border-2 border-black bg-[#FFD54F] hover:bg-[#FBC02D] text-xs font-black text-black transition-all flex items-center gap-1.5 nb-shadow-sm"
           >
             <span>Campus Clock</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -375,13 +375,13 @@ export default function OverthinkingEnginePage() {
       {/* ── 1. HERO SECTION ── */}
       <section className="relative z-10 pt-12 pb-8 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border-2 border-black bg-white text-black text-xs font-black uppercase tracking-wider nb-shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-[#7C5CF0]" />
+          <Sparkles className="w-3.5 h-3.5 text-[#2E7D32]" />
           <span>Neuro-Linguistic Spiral Mapping System</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight leading-[0.95] text-black">
           The{' '}
-          <span className="inline-block bg-[#A78BFA] border-3 border-black px-2 -rotate-1 nb-shadow">
+          <span className="inline-block bg-[#80CBC4] border-3 border-black px-2 -rotate-1 nb-shadow">
             Overthinking
           </span>{' '}
           Engine
@@ -407,7 +407,7 @@ export default function OverthinkingEnginePage() {
             <button
               onClick={() => handleStartEngine()}
               disabled={!scenario.trim()}
-              className="nb-btn w-full sm:w-auto bg-[#FF6B70] text-white text-xs uppercase tracking-wider font-black disabled:opacity-40 shrink-0"
+              className="nb-btn w-full sm:w-auto bg-[#BF360C] text-white text-xs uppercase tracking-wider font-black disabled:opacity-40 shrink-0"
             >
               <Zap className="w-4 h-4" />
               <span>Start Engine</span>
@@ -423,7 +423,7 @@ export default function OverthinkingEnginePage() {
               <button
                 key={idx}
                 onClick={() => handleStartEngine(preset)}
-                className="text-[11px] px-2.5 py-1 rounded-md bg-white border-2 border-black/25 hover:border-black hover:bg-[#FFF9F1] text-black/70 hover:text-black font-semibold transition-all text-left truncate max-w-[260px]"
+                className="text-[11px] px-2.5 py-1 rounded-md bg-white border-2 border-black/25 hover:border-black hover:bg-[#F7FBF3] text-black/70 hover:text-black font-semibold transition-all text-left truncate max-w-[260px]"
               >
                 {preset}
               </button>
@@ -435,7 +435,7 @@ export default function OverthinkingEnginePage() {
       {/* ── KILL SWITCH / GROUNDING RESET MODAL BANNER ── */}
       {killSwitchTriggered && (
         <div className="relative z-30 max-w-2xl mx-auto px-4 my-8">
-          <div className="p-8 rounded-2xl border-3 border-black bg-[#42D1C3] nb-shadow-lg text-center space-y-4">
+          <div className="p-8 rounded-2xl border-3 border-black bg-[#4DB6AC] nb-shadow-lg text-center space-y-4">
             <div className="w-14 h-14 rounded-2xl bg-white border-3 border-black nb-shadow-sm flex items-center justify-center mx-auto text-black">
               <Compass className="w-7 h-7 stroke-[2.2]" />
             </div>
@@ -468,7 +468,7 @@ export default function OverthinkingEnginePage() {
           <div className="text-center relative">
             <div className="inline-block relative">
               <div className="p-4 sm:p-5 rounded-2xl bg-white border-3 border-black nb-shadow max-w-lg mx-auto">
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#7C5CF0] block mb-1">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#2E7D32] block mb-1">
                   Trigger Event (Origin Node)
                 </span>
                 <p className="text-sm sm:text-base font-black text-black">
@@ -490,7 +490,7 @@ export default function OverthinkingEnginePage() {
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-[#171717] text-white nb-shadow-sm'
+                  ? 'bg-[#1B2E1F] text-white nb-shadow-sm'
                   : 'bg-white text-black/60 hover:text-black'
               }`}
             >
@@ -500,7 +500,7 @@ export default function OverthinkingEnginePage() {
               onClick={() => setActiveTab('logical')}
               className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'logical'
-                  ? 'bg-[#42D1C3] text-black nb-shadow-sm'
+                  ? 'bg-[#4DB6AC] text-black nb-shadow-sm'
                   : 'bg-white text-black/60 hover:text-black'
               }`}
             >
@@ -510,7 +510,7 @@ export default function OverthinkingEnginePage() {
               onClick={() => setActiveTab('whatif')}
               className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'whatif'
-                  ? 'bg-[#A78BFA] text-black nb-shadow-sm'
+                  ? 'bg-[#80CBC4] text-black nb-shadow-sm'
                   : 'bg-white text-black/60 hover:text-black'
               }`}
             >
@@ -520,7 +520,7 @@ export default function OverthinkingEnginePage() {
               onClick={() => setActiveTab('catastrophe')}
               className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'catastrophe'
-                  ? 'bg-[#FF6B70] text-white nb-shadow-sm'
+                  ? 'bg-[#BF360C] text-white nb-shadow-sm'
                   : 'bg-white text-black/60 hover:text-black'
               }`}
             >
@@ -530,7 +530,7 @@ export default function OverthinkingEnginePage() {
               onClick={() => setActiveTab('delusion')}
               className={`px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase transition-all cursor-pointer ${
                 activeTab === 'delusion'
-                  ? 'bg-[#FFA477] text-black nb-shadow-sm'
+                  ? 'bg-[#A5D6A7] text-black nb-shadow-sm'
                   : 'bg-white text-black/60 hover:text-black'
               }`}
             >
@@ -557,7 +557,7 @@ export default function OverthinkingEnginePage() {
                       isFaded
                         ? 'opacity-40 grayscale hover:opacity-90 transition-opacity'
                         : isHighlighted
-                        ? 'ring-4 ring-[#42D1C3] -translate-y-1'
+                        ? 'ring-4 ring-[#4DB6AC] -translate-y-1'
                         : ''
                     }`}
                   >
@@ -585,7 +585,7 @@ export default function OverthinkingEnginePage() {
                     </p>
 
                     {/* Anxiety Meter */}
-                    <div className="p-3 rounded-xl bg-[#FFF9F1] border-2 border-black mb-4">
+                    <div className="p-3 rounded-xl bg-[#F7FBF3] border-2 border-black mb-4">
                       <div className="flex items-center justify-between text-[10px] font-black uppercase mb-1.5">
                         <span className="text-black/60">Anxiety Metric</span>
                         <span className="text-black">{branch.anxiety}% Index</span>
@@ -605,7 +605,7 @@ export default function OverthinkingEnginePage() {
                       <div className="space-y-3">
                         <button
                           onClick={() => toggleNodeExpansion(branch.id)}
-                          className="w-full py-2 px-3 rounded-lg border-2 border-black bg-white hover:bg-[#FFF9F1] text-xs font-black uppercase text-black/80 hover:text-black transition-all flex items-center justify-between cursor-pointer"
+                          className="w-full py-2 px-3 rounded-lg border-2 border-black bg-white hover:bg-[#F7FBF3] text-xs font-black uppercase text-black/80 hover:text-black transition-all flex items-center justify-between cursor-pointer"
                         >
                           <span>
                             {isExpanded
@@ -621,7 +621,7 @@ export default function OverthinkingEnginePage() {
                             {branch.subNodes.map((sub) => (
                               <div
                                 key={sub.id}
-                                className="p-3 rounded-xl bg-[#FFF9F1] border-2 border-black transition-all text-xs space-y-1"
+                                className="p-3 rounded-xl bg-[#F7FBF3] border-2 border-black transition-all text-xs space-y-1"
                               >
                                 <div className="flex items-center justify-between">
                                   <span className="font-black text-black uppercase text-[11px]">
@@ -654,10 +654,10 @@ export default function OverthinkingEnginePage() {
           <div className="w-full sm:w-56 space-y-1">
             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-black/60">
               <span className="flex items-center gap-1 text-black">
-                <Sliders className="w-3 h-3 text-[#7C5CF0]" />
+                <Sliders className="w-3 h-3 text-[#2E7D32]" />
                 <span>Intensity</span>
               </span>
-              <span className="text-[#7C5CF0] font-black">
+              <span className="text-[#2E7D32] font-black">
                 {intensity === 1
                   ? 'Mild'
                   : intensity === 2
@@ -675,7 +675,7 @@ export default function OverthinkingEnginePage() {
               max="5"
               value={intensity}
               onChange={(e) => setIntensity(parseInt(e.target.value, 10))}
-              className="w-full h-2 rounded-lg bg-[#FFF9F1] border-2 border-black accent-[#A78BFA] cursor-pointer"
+              className="w-full h-2 rounded-lg bg-[#F7FBF3] border-2 border-black accent-[#80CBC4] cursor-pointer"
             />
           </div>
 
@@ -703,7 +703,7 @@ export default function OverthinkingEnginePage() {
           {/* Button: Kill Switch / Force Reset */}
           <button
             onClick={handleKillSwitch}
-            className="nb-btn w-full sm:w-auto bg-[#FF6B70] text-white text-xs uppercase tracking-wider font-black shrink-0"
+            className="nb-btn w-full sm:w-auto bg-[#BF360C] text-white text-xs uppercase tracking-wider font-black shrink-0"
           >
             <Power className="w-4 h-4 stroke-[2.5]" />
             <span>Kill Switch</span>

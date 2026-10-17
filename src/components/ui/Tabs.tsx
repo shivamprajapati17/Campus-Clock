@@ -30,8 +30,8 @@ export function Tabs({ tabs, activeTab, onChange, className }: TabsProps) {
             className={cn(
               'px-4 py-2 font-black text-sm rounded-t-xl border-3 border-black border-b-0 transition-all cursor-pointer flex items-center gap-2 select-none -mb-[3px]',
               isActive
-                ? 'bg-[#FFE66D] text-black shadow-[3px_-3px_0_#000] translate-y-[-2px]'
-                : 'bg-white text-black/70 hover:bg-[#FFF5EB] hover:text-black'
+                ? 'bg-[#FFD54F] text-black shadow-[3px_-3px_0_#000] translate-y-[-2px]'
+                : 'bg-white text-black/70 hover:bg-[#F1F8E9] hover:text-black'
             )}
           >
             {tab.icon && <span>{tab.icon}</span>}

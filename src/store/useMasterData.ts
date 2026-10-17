@@ -21,7 +21,9 @@ import {
   MOCK_USERS,
 } from '@/lib/data/mockData';
 
-const STORAGE_KEY = 'campus_clock_master_data_v1';
+// Bumping the version invalidates payloads saved before the seed changed
+// (for example the CMPN HOD rename), so stale names never outlive a release.
+const STORAGE_KEY = 'campus_clock_master_data_v2';
 
 /** The only slice of state worth persisting. */
 export interface MasterDataPayload {

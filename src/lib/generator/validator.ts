@@ -22,7 +22,10 @@ import { type TimetableEntry, type Clash, BREAK_AFTER_SLOT } from '@/lib/types';
  * @returns An array of `Clash` objects. Empty means no issues.
  */
 export function validateTimetable(
-  entries: Pick<TimetableEntry, 'day' | 'slot' | 'subject_id' | 'faculty_id' | 'room_id' | 'entry_type'>[]
+  entries: Pick<
+    TimetableEntry,
+    'day' | 'slot' | 'subject_id' | 'faculty_id' | 'room_id' | 'entry_type' | 'batch'
+  >[]
 ): Clash[] {
   const clashes: Clash[] = [];
 
@@ -66,9 +69,21 @@ export function validateTimetable(
     }
   }
 
+  /**
+   * Two cohorts can share a room/period when every colliding entry carries a
+   * distinct batch label — that is how the ECS B lab rotation is published.
+   */
+  const parallelBatches = (indices: number[]): boolean => {
+    const batches = indices.map((i) => entries[i].batch);
+    return (
+      batches.every((b): b is string => typeof b === 'string' && b.length > 0) &&
+      new Set(batches).size === batches.length
+    );
+  };
+
   // ── 2. Room conflicts ─────────────────────────────────────
   for (const [key, indices] of Object.entries(roomSlots)) {
-    if (indices.length > 1) {
+    if (indices.length > 1 && !parallelBatches(indices)) {
       const [roomId, ds] = key.split('::');
       const [day, slot] = ds.split('-').map(Number);
       clashes.push({
@@ -82,7 +97,7 @@ export function validateTimetable(
 
   // ── 3. Class conflicts ────────────────────────────────────
   for (const [ds, indices] of Object.entries(classSlots)) {
-    if (indices.length > 1) {
+    if (indices.length > 1 && !parallelBatches(indices)) {
       // Practicals legitimately occupy 2 rows for the *same* subject+faculty+room.
       // That is NOT a conflict. We only flag it when different subjects collide.
       const uniqueSubjects = new Set(indices.map((i) => entries[i].subject_id));
@@ -106,30 +121,32 @@ export function validateTimetable(
   for (let i = 0; i < entries.length; i++) {
     const e = entries[i];
     if (e.entry_type !== 'practical') continue;
-    const gKey = `${e.subject_id}::${e.day}`;
+    const gKey = `${e.subject_id}::${e.day}::${e.batch ?? 'all'}`;
     if (!practicalGroups[gKey]) practicalGroups[gKey] = [];
     practicalGroups[gKey].push(e.slot);
   }
 
   for (const [gKey, slots] of Object.entries(practicalGroups)) {
-    // Each practical session should have exactly 2 slots
-    if (slots.length !== 2) {
-      const [, dayStr] = gKey.split('::');
+    // A session is 1 hour (a single-batch lab) or 2 hours (a double lab).
+    if (slots.length > 2) {
+      const dayStr = gKey.split('::')[1];
       clashes.push({
         type: 'practical_consecutive',
         day: Number(dayStr),
         slot: Math.min(...slots),
-        details: `Practical session has ${slots.length} slot(s) instead of the required 2.`,
+        details: `Practical session has ${slots.length} slots; at most 2 are allowed.`,
       });
       continue;
     }
 
+    if (slots.length === 1) continue;
+
     slots.sort((a, b) => a - b);
     const [s1, s2] = slots;
 
-    // Must be numerically consecutive and not span the break
+    // Two-hour sessions must be numerically consecutive and not span the break
     if (s2 !== s1 + 1 || s1 === BREAK_AFTER_SLOT) {
-      const [, dayStr] = gKey.split('::');
+      const dayStr = gKey.split('::')[1];
       clashes.push({
         type: 'practical_consecutive',
         day: Number(dayStr),

@@ -38,7 +38,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
-        {error && <span className="text-xs font-bold text-[#FF6B70] mt-0.5">{error}</span>}
+        {error && <span className="text-xs font-bold text-[#BF360C] mt-0.5">{error}</span>}
       </div>
     );
   }

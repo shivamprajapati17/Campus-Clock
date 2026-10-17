@@ -1,7 +1,7 @@
-# ⏰ Campus Clock — AI-Powered 0-Clash Timetable SaaS
+# 🌱 Campus Clock — Grow Your Perfect Schedule
 
 > **Buildsaur Track 1 — Campus Timetable Generator**  
-> *100% Conflict-Free Academic Scheduling in Authentic Neubrutalism Design*
+> *100% conflict-free academic scheduling in a Bulbasaur garden theme, with a four-language assistant*
 
 [![Deploy with Vercel](https://vercel.com/button)](https://campusclock.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -45,24 +45,28 @@ Campus Clock implements a **depth-limited constraint-backtracking engine** that 
 
 ---
 
-## 🎨 Neubrutalism Design System
+## 🎨 Bulbasaur Garden Design System
 
-Campus Clock features a bold, human-designed **Neubrutalism** visual aesthetic:
+Every page reads the same tokens in `src/app/globals.css` (`@theme` + `:root`):
 
 | Design Token | Value | Visual Purpose |
 |---|---|---|
-| **Background** | `#FFF5EB` | Warm cream paper-like backdrop |
-| **Primary** | `#FF6B70` | High-impact coral / Management |
-| **Secondary** | `#A78BFA` | Lavender purple / HOD council |
-| **Accent** | `#42D1C3` | Turquoise / Teacher & success validation |
-| **Highlight** | `#FFE66D` | Butter yellow / Student & CTAs |
-| **Peach** | `#FFA477` | Supporting accent / lecture differentiation |
-| **Ink** | `#171717` | Warm near-black text & borders |
-| **Muted** | `#777777` | Secondary text |
-| **Border** | `3px solid #171717` | Unapologetic thick comic-style borders |
-| **Shadow** | `4px 4px 0 #171717` | Hard offset shadows, never blurred |
-| **Type** | `Poppins` | Bold/extra-bold headings, medium body |
-| **Lunch Break** | Diagonal Striped | `#FFE66D` & `#FFFDF5` barber-pole break row |
+| **Background** | `#F1F8E9` | Fresh leaf-paper backdrop |
+| **Primary** | `#2E7D32` | Deep leaf green / primary actions |
+| **Primary dark** | `#1B5E20` | Shadows and pressed states |
+| **Accent (teal)** | `#4DB6AC` | Labs, HOD surfaces, success |
+| **Accent 2 (sunflower)** | `#FFD54F` | CTAs, break rows, student role |
+| **Danger** | `#BF360C` | Clash alerts and errors only |
+| **Lecture / Lab / Tutorial** | `#DCEDC8` / `#B2DFDB` / `#FFF9C4` | Timetable cell tints |
+| **Ink** | `#1B2E1F` | Deep green ink for text and borders |
+| **Border** | `3px solid #1B2E1F` | Chunky garden-frame borders |
+| **Shadow** | `4px 4px 0 #1B5E20` | Soft leaf-offset shadows |
+| **Radius** | `16px` | Rounded, friendly cards |
+| **Type** | `Poppins` (`next/font/google`) | Rounded headings and body |
+
+Role badges: Management `#1B5E20`, HOD `#00796B`, Teacher `#7CB342`, Student `#FBC02D`.
+The landing page adds an SVG vine border, leaf motifs on the feature cards and an inline
+Bulbasaur mascot — all drawn in code, so no extra image files are needed.
 
 ---
 
@@ -96,28 +100,45 @@ The login screen includes instant 1-click autofill buttons for all 4 roles:
 
 ## ⚙️ Technical Architecture & Stack
 
-```
-   ┌─────────────────────────────────────────────────────────┐
-   │             Next.js 14 (App Router) + React             │
-   │               Neubrutalism Tailwind UI                  │
-   └─────────────┬─────────────────────────────┬─────────────┘
-                 │                             │
-       Client State & Cache           API Route Handlers
-        (Zustand + SSR)               (/api/timetable/*)
-                 │                             │
-   ┌─────────────┴─────────────┐ ┌─────────────┴─────────────┐
-   │    Backtracking Engine    │ │  Supabase / DB Storage    │
-   │  (Practicals, Labs, Free) │ │ (Profiles, Tables, Rooms) │
-   └───────────────────────────┘ └───────────────────────────┘
-```
+![Campus Clock system architecture](docs/campus-clock-architecture.png)
+
+The exported diagram ([`docs/campus-clock-architecture.png`](docs/campus-clock-architecture.png)) numbers the
+chatbot flow 1–6: user → widget → `/api/chat` → timetable tools → optional LLM → reply.
 
 - **Frontend**: Next.js 16, React 19, Tailwind CSS v4 (via `@tailwindcss/postcss`), Poppins, Lucide Icons, Canvas Confetti
-- **State**: Zustand Store (`src/store/useStore.ts`)
+- **State**: Zustand stores (`src/store/useStore.ts`, `useMasterData.ts`, `useTimetableData.ts`)
 - **Generator**: Custom constraint-satisfaction backtracking engine (`src/lib/generator/engine.ts`)
-- **Validator**: Live collision checker (`src/lib/generator/validator.ts`)
+- **Validator**: Live collision checker (`src/lib/generator/validator.ts`), batch-aware for parallel labs
+- **Assistant**: `/api/chat` + `src/lib/chatTools.ts` + floating `src/components/Chatbot.tsx` (EN/HI/ES/FR)
 - **Database & Auth**: Supabase PostgreSQL / SSR Client + Session Cookies
 - **Exports**: `jspdf`, `jspdf-autotable`, `xlsx` (SheetJS)
 - **Deployment**: Vercel Serverless Platform
+
+### 🔐 Environment variables
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Recommended | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Recommended | Supabase anon key |
+| `ANTHROPIC_API_KEY` | Optional | Upgrades Sprout to an LLM. **Server-side only** — never prefix it with `NEXT_PUBLIC_`. Without it the assistant answers from real timetable data in all four languages. |
+| `ANTHROPIC_MODEL` | Optional | Model id; defaults to `claude-3-5-haiku-latest` |
+
+### 🤖 Sprout — the multilingual assistant
+
+- Floating 🌱 button on every page; panel with a language dropdown (English, हिन्दी, Español, Français).
+- Quick replies: free teachers now, my timetable, export PDF.
+- Real answers from the seeds: free-faculty lookup, today's periods for the signed-in division, publish steps and role permissions.
+- Five canned answers per language are used if the network or the LLM fails, so the demo never breaks.
+- `GET /api/chat` exposes which languages and published timetables the bot can see (handy for smoke tests).
+
+### 🎓 ECS B — real seeded class
+
+The First-Year **ECS B** division is transcribed from the official sheet (`ECS B.pdf`): the
+Department of Humanities & Applied Sciences, 13 real teachers (Priti Raut, Lahu Teli, Manjiri
+Gogate, Bhagyesh Kasle, Poonam Bawankar, Akshata Gondhalekar, Durgesh Pal, Nesar Ahmad,
+Aditya Desai, Samita Bhandari, Vinayak Shinde, Amee Ghadia, Bhavik Modi), 12 subjects with
+course codes, 10 rooms and a published 39-period timetable. It uses eight periods with
+per-day breaks (P4 on Mon/Wed/Fri, P6 on Tue/Thu) and labelled lab batches.
 
 ---
 
@@ -130,6 +151,8 @@ The login screen includes instant 1-click autofill buttons for all 4 roles:
 | `GET` | `/api/timetable` | List timetables; filter by `department_id`, `division_id`, `status` |
 | `POST` | `/api/timetable/generate` | Run the 0-clash backtracking engine for a division |
 | `GET` | `/api/faculty/free` | Free faculty for `?day=` and `?slot=` |
+| `GET` | `/api/chat` | Assistant capabilities: languages + published timetables |
+| `POST` | `/api/chat` | Multilingual assistant reply (`messages`, `lang`, `role`, `context`) |
 | `GET` | `/api/chat/[roomId]` | Messages in a room |
 | `POST` | `/api/chat/[roomId]` | Post a message to a room |
 | `GET` | `/api/notifications` | Notification stream |
@@ -139,6 +162,7 @@ The login screen includes instant 1-click autofill buttons for all 4 roles:
 
 > Authentication is backed by Supabase; the remaining handlers read from the in-app seed data.
 > See [What is real and what is simulated](docs/Campus-Clock-Guide.md#12-what-is-real-and-what-is-simulated).
+
 
 ---
 
@@ -160,6 +184,8 @@ Copy `.env.example` to `.env.local` (Campus Clock includes a built-in fallback m
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# Optional: upgrades Sprout to an LLM. Server-side only, never NEXT_PUBLIC_.
+ANTHROPIC_API_KEY=
 ```
 To provision the database, run [`supabase/schema.sql`](supabase/schema.sql) in the Supabase SQL editor — it creates the `profiles`, `departments`, `divisions`, `subjects`, `rooms`, `faculty`, `timetables`, `timetable_entries`, `chat_messages` and `notifications` tables with row-level security.
 
@@ -178,6 +204,30 @@ Campus Clock is optimized for seamless 1-click Vercel deployment:
 2. Import project in [Vercel](https://vercel.com/)
 3. Framework Preset: **Next.js**
 4. Deploy! Live URL: [https://campusclock.vercel.app/](https://campusclock.vercel.app/)
+
+---
+
+## 📱 Android App
+
+The same portal also ships as a signed Android WebView app — the file is
+[`android/CampusClock.apk`](android/CampusClock.apk) (package
+`com.campusclock.app`, minSdk 23, target 34). Install it on a device with
+"Install unknown apps" allowed; it opens `https://campusclock.vercel.app` in a
+native shell and saves PDF/Excel downloads straight to the device's Downloads
+folder.
+
+To rebuild it after changing the web app or the shell:
+
+```bash
+# JDK 17 + Android SDK (build-tools 34, platform 34)
+ANDROID_SDK=/path/to/android-sdk JAVA_HOME=/path/to/jdk-17 ./android/build-apk.sh
+```
+
+The script compiles resources with `aapt2`, dexes with `d8`, aligns with
+`zipalign` and signs with `apksigner`. It needs no Gradle and no network access
+beyond the local SDK. The signing key is generated on first run as
+`android/.android-signing.keystore` and is deliberately **not** committed — keep
+it if you want to ship updates that Android will accept as the same app.
 
 ---
 

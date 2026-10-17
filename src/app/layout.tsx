@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
+import { Chatbot } from '@/components/Chatbot';
 import './globals.css';
 
 const poppins = Poppins({
@@ -10,9 +11,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Campus Clock | AI-Powered 0-Clash Timetable SaaS',
+  title: 'Campus Clock | Grow Your Perfect Schedule',
   description:
-    'Automated, clash-free academic timetable generator with live drag-and-drop editor, department chat, and instant PDF/Excel exports.',
+    'Automated, clash-free academic timetables with a live editor, free-faculty finder, four-language assistant, and instant PDF/Excel exports.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -30,6 +31,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-cream text-ink font-sans antialiased">
         {children}
+        <Chatbot />
       </body>
     </html>
   );

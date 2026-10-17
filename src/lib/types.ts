@@ -83,15 +83,27 @@ export interface TimetableEntry {
   id: string;
   timetable_id: string;
   day: 1 | 2 | 3 | 4 | 5;
-  slot: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  slot: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   subject_id: string;
   faculty_id: string;
   room_id: string;
   entry_type: 'lecture' | 'practical' | 'tutorial';
   is_locked: boolean;
+  /**
+   * Optional practical/tutorial batch. Two batches can legitimately sit in the
+   * same period (one in a lab, one in a tutorial room), so the grid renders a
+   * cell as a list rather than assuming a single entry.
+   */
+  batch?: string | null;
   subject?: Subject;
   faculty?: Faculty;
   room?: Room;
+}
+
+/** A scheduled lunch/activity break inside one day of a timetable. */
+export interface TimetableBreak {
+  day: number;
+  slot: number;
 }
 
 /** Complete timetable for a division */
@@ -106,6 +118,8 @@ export interface Timetable {
   created_at: string;
   updated_at: string;
   entries?: TimetableEntry[];
+  /** Breaks are per day because lab rotations move lunch on some days. */
+  breaks?: TimetableBreak[];
   division?: Division;
   department?: Department;
 }
@@ -201,33 +215,34 @@ export const DAYS: Record<number, string> = {
   5: 'Friday',
 } as const;
 
-/** Time-slot definitions (1-indexed, 7 teaching slots) */
+/** Time-slot definitions (1-indexed, 8 teaching periods) */
 export const SLOTS: Record<number, { label: string; start: string; end: string }> = {
-  1: { label: 'Slot 1', start: '09:00', end: '10:00' },
-  2: { label: 'Slot 2', start: '10:00', end: '11:00' },
-  3: { label: 'Slot 3', start: '11:00', end: '12:00' },
-  4: { label: 'Slot 4', start: '12:00', end: '01:00' },
-  5: { label: 'Slot 5', start: '01:30', end: '02:30' },
-  6: { label: 'Slot 6', start: '02:30', end: '03:30' },
-  7: { label: 'Slot 7', start: '03:30', end: '04:30' },
+  1: { label: 'Slot 1', start: '09:15', end: '10:15' },
+  2: { label: 'Slot 2', start: '10:15', end: '11:15' },
+  3: { label: 'Slot 3', start: '11:15', end: '12:15' },
+  4: { label: 'Slot 4', start: '12:15', end: '01:15' },
+  5: { label: 'Slot 5', start: '01:15', end: '02:15' },
+  6: { label: 'Slot 6', start: '02:15', end: '03:15' },
+  7: { label: 'Slot 7', start: '03:15', end: '04:15' },
+  8: { label: 'Slot 8', start: '04:15', end: '05:15' },
 } as const;
 
-/** Break falls between slot 4 and slot 5 (lunch break) */
+/** Default lunch slot. Most timetables break after period 4. */
 export const BREAK_AFTER_SLOT = 4;
 
-/** Badge / accent colours per role (Neo-Brutalist palette) */
+/** Badge / accent colours per role (Bulbasaur palette) */
 export const ROLE_COLORS: Record<UserRole, string> = {
-  management: '#FF6B70', // coral red
-  hod: '#A78BFA', // lavender purple
-  teacher: '#42D1C3', // turquoise
-  student: '#FFE66D', // butter yellow
+  management: '#1B5E20', // deep leaf green
+  hod: '#00796B', // teal
+  teacher: '#7CB342', // lime
+  student: '#FBC02D', // sunflower yellow
 } as const;
 
-/** Rotating palette for subject cards (Neo-Brutalist palette) */
+/** Tint palette for subject cards — keeps every card in the garden palette. */
 export const SUBJECT_COLORS: string[] = [
-  '#FF6B70', // coral red
-  '#A78BFA', // lavender purple
-  '#42D1C3', // turquoise
-  '#FFE66D', // butter yellow
-  '#FFA477', // peach
+  '#DCEDC8', // light leaf
+  '#B2DFDB', // soft teal
+  '#FFF9C4', // sunlit yellow
+  '#C8E6C9', // mint
+  '#A5D6A7', // leaf
 ] as const;

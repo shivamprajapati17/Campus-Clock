@@ -18,16 +18,39 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ roomId: string }> }
 ) {
+  let body: { text?: unknown; sender_name?: string; sender_role?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: 'Request body must be valid JSON' },
+      { status: 400 }
+    );
+  }
+
   try {
     const { roomId } = await params;
-    const body = await request.json();
     const { text, sender_name, sender_role } = body;
+
+    if (typeof text !== 'string' || text.trim().length === 0) {
+      return NextResponse.json(
+        { ok: false, error: 'Message text is required' },
+        { status: 400 }
+      );
+    }
+
+    if (text.length > 2000) {
+      return NextResponse.json(
+        { ok: false, error: 'Message is too long (max 2000 characters)' },
+        { status: 413 }
+      );
+    }
 
     const newMsg = {
       id: `msg-${Date.now()}`,
       room_id: roomId,
       sender_id: 'user-curr',
-      text,
+      text: text.trim(),
       created_at: new Date().toISOString(),
       sender: {
         name: sender_name || 'Anonymous',

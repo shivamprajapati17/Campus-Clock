@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useStore } from '@/store/useStore';
 import {
   LayoutDashboard,
   Calendar,
@@ -14,6 +15,8 @@ import {
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { user } = useStore();
+  const staff = user?.role === 'hod' || user?.role === 'management';
 
   const navItems = [
     {
@@ -26,11 +29,15 @@ export function MobileNav() {
       href: '/dashboard/timetable',
       icon: <Calendar className="w-5 h-5 stroke-[2.2]" />,
     },
-    {
-      label: 'Generate',
-      href: '/dashboard/generate',
-      icon: <Sparkles className="w-5 h-5 stroke-[2.2]" />,
-    },
+    ...(staff
+      ? [
+          {
+            label: 'Generate',
+            href: '/dashboard/generate',
+            icon: <Sparkles className="w-5 h-5 stroke-[2.2]" />,
+          },
+        ]
+      : []),
     {
       label: 'Chat',
       href: '/dashboard/chat',
@@ -58,7 +65,7 @@ export function MobileNav() {
             className={cn(
               'flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all',
               isActive
-                ? 'bg-[#FFE66D] text-black border-2 border-black nb-shadow-sm font-black'
+                ? 'bg-[#FFD54F] text-black border-2 border-black nb-shadow-sm font-black'
                 : 'text-black/70 hover:text-black font-bold'
             )}
           >

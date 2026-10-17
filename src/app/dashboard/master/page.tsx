@@ -12,14 +12,14 @@ import { Dropdown } from '@/components/ui/Dropdown';
 import { Modal } from '@/components/ui/Modal';
 import { useStore } from '@/store/useStore';
 import { useMasterData } from '@/store/useMasterData';
+import { useTimetableData } from '@/store/useTimetableData';
 import { resolveDepartmentId } from '@/lib/utils';
-import { MOCK_FACULTY, MOCK_TIMETABLES } from '@/lib/data/mockData';
+import { MOCK_FACULTY } from '@/lib/data/mockData';
+import { validateTimetable } from '@/lib/generator/validator';
 import type { Department, Division } from '@/lib/types';
 import {
-  Layers,
   Building,
   Users,
-  CheckCircle2,
   Eye,
   Edit3,
   Plus,
@@ -51,6 +51,8 @@ export default function MasterViewPage() {
   const departments = useMasterData((s) => s.departments);
   const divisions = useMasterData((s) => s.divisions);
   const directoryUsers = useMasterData((s) => s.directoryUsers);
+  const timetables = useTimetableData((s) => s.timetables);
+  const deleteTimetable = useTimetableData((s) => s.deleteTimetable);
   const addDepartment = useMasterData((s) => s.addDepartment);
   const updateDepartment = useMasterData((s) => s.updateDepartment);
   const deleteDepartment = useMasterData((s) => s.deleteDepartment);
@@ -89,6 +91,30 @@ export default function MasterViewPage() {
   const deptDivisions = useMemo(
     () => divisions.filter((div) => div.department_id === activeDeptId),
     [divisions, activeDeptId]
+  );
+
+  const deptTimetables = useMemo(
+    () => timetables.filter((t) => t.department_id === activeDeptId),
+    [timetables, activeDeptId]
+  );
+
+  // Live compliance figure instead of a hardcoded "All Green" badge.
+  const deptClashes = useMemo(
+    () =>
+      deptTimetables.reduce(
+        (total, t) => total + validateTimetable(t.entries ?? []).length,
+        0
+      ),
+    [deptTimetables]
+  );
+
+  const campusClashes = useMemo(
+    () =>
+      timetables.reduce(
+        (total, t) => total + validateTimetable(t.entries ?? []).length,
+        0
+      ),
+    [timetables]
   );
 
   const hods = useMemo(
@@ -243,9 +269,21 @@ export default function MasterViewPage() {
   const confirmDelete = () => {
     if (!pendingDelete) return;
     if (pendingDelete.kind === 'department') {
+      // A branch cannot leave orphan schedules behind, so its classes and
+      // their timetables go with it.
+      divisions
+        .filter((d) => d.department_id === pendingDelete.id)
+        .forEach((division) => {
+          timetables
+            .filter((t) => t.division_id === division.id)
+            .forEach((t) => deleteTimetable(t.id));
+        });
       deleteDepartment(pendingDelete.id);
       if (selectedDeptId === pendingDelete.id) setSelectedDeptId('');
     } else {
+      timetables
+        .filter((t) => t.division_id === pendingDelete.id)
+        .forEach((t) => deleteTimetable(t.id));
       deleteDivision(pendingDelete.id);
     }
     setPendingDelete(null);
@@ -322,7 +360,7 @@ export default function MasterViewPage() {
             </p>
           </Card>
 
-          <Card className="p-5 bg-[#42D1C3]">
+          <Card className="p-5 bg-[#4DB6AC]">
             <span className="text-xs font-black uppercase text-black/80">
               Campus Divisions
             </span>
@@ -334,7 +372,7 @@ export default function MasterViewPage() {
             </p>
           </Card>
 
-          <Card className="p-5 bg-[#A78BFA]">
+          <Card className="p-5 bg-[#80CBC4]">
             <span className="text-xs font-black uppercase text-black/80">
               Active Faculty
             </span>
@@ -346,13 +384,17 @@ export default function MasterViewPage() {
             </p>
           </Card>
 
-          <Card className="p-5 bg-[#FFE66D]">
+          <Card className="p-5 bg-[#FFD54F]">
             <span className="text-xs font-black uppercase text-black/80">
               Compliance Status
             </span>
-            <div className="text-3xl font-black text-black mt-1">All Green</div>
+            <div className="text-3xl font-black text-black mt-1">
+              {campusClashes === 0 ? 'All Green' : `${campusClashes} Open`}
+            </div>
             <p className="text-xs font-bold text-black/80 mt-1">
-              Zero room / teacher collisions
+              {campusClashes === 0
+                ? 'Zero room / teacher collisions'
+                : 'Conflicts to resolve in the editor'}
             </p>
           </Card>
         </div>
@@ -365,8 +407,8 @@ export default function MasterViewPage() {
             onChange={setSelectedDeptId}
           />
         ) : (
-          <Card className="p-6 bg-[#FFF9F1] text-center">
-            <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-[#FF6B70]" />
+          <Card className="p-6 bg-[#F7FBF3] text-center">
+            <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-[#BF360C]" />
             <h3 className="font-black uppercase text-black">
               No departments available
             </h3>
@@ -397,7 +439,10 @@ export default function MasterViewPage() {
                 </h2>
                 <p className="text-xs font-bold text-black/60">
                   {deptDivisions.length} division
-                  {deptDivisions.length === 1 ? '' : 's'} • term 2026-2027
+                  {deptDivisions.length === 1 ? '' : 's'} •{' '}
+                  {deptClashes === 0
+                    ? '0 clashes'
+                    : `${deptClashes} clash${deptClashes === 1 ? '' : 'es'}`}
                 </p>
               </div>
 
@@ -450,7 +495,7 @@ export default function MasterViewPage() {
             </div>
 
             {deptDivisions.length === 0 ? (
-              <div className="p-8 rounded-2xl border-3 border-dashed border-black/30 bg-[#FFF9F1] text-center">
+              <div className="p-8 rounded-2xl border-3 border-dashed border-black/30 bg-[#F7FBF3] text-center">
                 <Users className="w-8 h-8 mx-auto mb-2 text-black/40" />
                 <h4 className="font-black uppercase text-black text-sm">
                   No divisions yet
@@ -472,10 +517,12 @@ export default function MasterViewPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {deptDivisions.map((div) => {
-                  const tt = MOCK_TIMETABLES.find(
-                    (t) => t.division_id === div.id
-                  );
+                  const tt = timetables.find((t) => t.division_id === div.id);
                   const isPub = tt?.status === 'published';
+                  const entryCount = tt?.entries?.length ?? 0;
+                  const labCount =
+                    tt?.entries?.filter((e) => e.entry_type === 'practical')
+                      .length ?? 0;
                   const teacher = div.class_teacher_id
                     ? userById.get(div.class_teacher_id)
                     : undefined;
@@ -483,7 +530,7 @@ export default function MasterViewPage() {
                   return (
                     <div
                       key={div.id}
-                      className="p-5 rounded-2xl border-3 border-black bg-[#FFF5EB] nb-shadow-sm flex flex-col justify-between"
+                      className="p-5 rounded-2xl border-3 border-black bg-[#F1F8E9] nb-shadow-sm flex flex-col justify-between"
                     >
                       <div className="flex items-start justify-between mb-3 gap-2">
                         <div>
@@ -497,52 +544,78 @@ export default function MasterViewPage() {
                             Class teacher: {teacher?.name ?? 'Not assigned'}
                           </p>
                         </div>
-                        <Badge color={isPub ? 'accent' : 'yellow'} size="sm">
-                          {isPub ? 'Published' : 'Draft'}
+                        <Badge color={!tt ? 'outline' : isPub ? 'accent' : 'yellow'} size="sm">
+                          {!tt ? 'No schedule' : isPub ? 'Published' : 'Draft'}
                         </Badge>
                       </div>
 
                       <div className="mt-2 space-y-1 text-xs font-bold text-black/80">
                         <div className="flex items-center justify-between py-1 border-b border-black/10">
-                          <span>Weekly Lectures</span>
-                          <span className="font-black">17 Slots</span>
+                          <span>Weekly Sessions</span>
+                          <span className="font-black">{entryCount} Slots</span>
                         </div>
                         <div className="flex items-center justify-between py-1 border-b border-black/10">
                           <span>Practical Labs (2-slot)</span>
-                          <span className="font-black">4 Slots</span>
+                          <span className="font-black">{labCount} Slots</span>
                         </div>
                         <div className="flex items-center justify-between py-1 border-b border-black/10">
                           <span>Clashes</span>
-                          <span className="font-black text-green-700">
-                            0 (Clean)
+                          <span
+                            className={
+                              validateTimetable(tt?.entries ?? []).length === 0
+                                ? 'font-black text-green-700'
+                                : 'font-black text-[#BF360C]'
+                            }
+                          >
+                            {validateTimetable(tt?.entries ?? []).length === 0
+                              ? '0 (Clean)'
+                              : `${validateTimetable(tt?.entries ?? []).length} found`}
                           </span>
                         </div>
                       </div>
 
                       <div className="mt-5 pt-3 border-t-2 border-black/20 flex flex-wrap items-center gap-2">
-                        <Link
-                          href={`/dashboard/timetable/${tt?.id || 'tt-se-a-pub'}`}
-                          className="flex-1 min-w-[120px]"
-                        >
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            icon={<Eye className="w-4 h-4" />}
-                          >
-                            View
-                          </Button>
-                        </Link>
+                        {tt ? (
+                          <>
+                            <Link
+                              href={`/dashboard/timetable/${tt.id}`}
+                              className="flex-1 min-w-[120px]"
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                                icon={<Eye className="w-4 h-4" />}
+                              >
+                                View
+                              </Button>
+                            </Link>
 
-                        <Link href={`/dashboard/editor/${tt?.id || 'tt-se-a-pub'}`}>
-                          <Button
-                            variant="warning"
-                            size="sm"
-                            icon={<Edit3 className="w-4 h-4" />}
+                            <Link href={`/dashboard/editor/${tt.id}`}>
+                              <Button
+                                variant="warning"
+                                size="sm"
+                                icon={<Edit3 className="w-4 h-4" />}
+                              >
+                                Edit
+                              </Button>
+                            </Link>
+                          </>
+                        ) : (
+                          <Link
+                            href="/dashboard/timetable"
+                            className="flex-1 min-w-[140px]"
                           >
-                            Edit
-                          </Button>
-                        </Link>
+                            <Button
+                              variant="warning"
+                              size="sm"
+                              className="w-full"
+                              icon={<Plus className="w-4 h-4" />}
+                            >
+                              Create Timetable
+                            </Button>
+                          </Link>
+                        )}
 
                         {canManageDivisions && (
                           <>
@@ -550,7 +623,7 @@ export default function MasterViewPage() {
                               onClick={() => openEditDiv(div)}
                               title="Edit division"
                               aria-label={`Edit ${div.name}`}
-                              className="p-2 rounded-lg border-2 border-black bg-white hover:bg-[#FFF5EB] nb-shadow-sm cursor-pointer"
+                              className="p-2 rounded-lg border-2 border-black bg-white hover:bg-[#F1F8E9] nb-shadow-sm cursor-pointer"
                             >
                               <Edit3 className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -564,7 +637,7 @@ export default function MasterViewPage() {
                               }
                               title="Delete division"
                               aria-label={`Delete ${div.name}`}
-                              className="p-2 rounded-lg border-2 border-black bg-white hover:bg-[#FF6B70] hover:text-white nb-shadow-sm cursor-pointer"
+                              className="p-2 rounded-lg border-2 border-black bg-white hover:bg-[#BF360C] hover:text-white nb-shadow-sm cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -580,7 +653,7 @@ export default function MasterViewPage() {
         )}
 
         {/* Branch compliance strip */}
-        <Card className="p-5 bg-[#FFF9F1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Card className="p-5 bg-[#F7FBF3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-6 h-6 text-green-700" />
             <div>
@@ -654,7 +727,7 @@ export default function MasterViewPage() {
             />
 
             {formError && (
-              <div className="p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
+              <div className="p-3 rounded-xl border-2 border-[#BF360C] bg-[#FFEBEE] text-xs font-black text-[#BF360C]">
                 {formError}
               </div>
             )}
@@ -743,7 +816,7 @@ export default function MasterViewPage() {
             )}
 
             {formError && (
-              <div className="p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
+              <div className="p-3 rounded-xl border-2 border-[#BF360C] bg-[#FFEBEE] text-xs font-black text-[#BF360C]">
                 {formError}
               </div>
             )}
@@ -776,7 +849,7 @@ export default function MasterViewPage() {
         >
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#FF6B70] border-2 border-black flex items-center justify-center text-white">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#BF360C] border-2 border-black flex items-center justify-center text-white">
                 <AlertTriangle className="w-5 h-5 stroke-[2.5]" />
               </div>
               <p className="text-sm font-bold text-black/80">
@@ -790,7 +863,7 @@ export default function MasterViewPage() {
                         {pendingDeleteDivisionCount} division
                         {pendingDeleteDivisionCount === 1 ? '' : 's'}
                       </span>{' '}
-                      will be removed as well.
+                      and their timetables will be removed as well.
                     </>
                   )}{' '}
                 This cannot be undone.

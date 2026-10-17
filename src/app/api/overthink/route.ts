@@ -15,7 +15,7 @@ export interface ThoughtBranch {
 function generateThoughtSpiral(scenario: string, intensity: number = 3) {
   const cleanScenario = scenario.trim();
 
-  // 1. Logical Reality (Turquoise #42D1C3)
+  // 1. Logical Reality (Turquoise #4DB6AC)
   const logicalBranch: ThoughtBranch = {
     id: 'branch-logical',
     type: 'logical',
@@ -46,7 +46,7 @@ function generateThoughtSpiral(scenario: string, intensity: number = 3) {
     ],
   };
 
-  // 2. The 'What If?' Loop (Lavender #A78BFA)
+  // 2. The 'What If?' Loop (Lavender #80CBC4)
   const whatIfBranch: ThoughtBranch = {
     id: 'branch-whatif',
     type: 'whatif',
@@ -88,7 +88,7 @@ function generateThoughtSpiral(scenario: string, intensity: number = 3) {
     ],
   };
 
-  // 3. Worst-Case Catastrophe (Coral #FF6B70)
+  // 3. Worst-Case Catastrophe (Coral #BF360C)
   const catastropheBranch: ThoughtBranch = {
     id: 'branch-catastrophe',
     type: 'catastrophe',
@@ -170,8 +170,17 @@ function generateThoughtSpiral(scenario: string, intensity: number = 3) {
 }
 
 export async function POST(request: NextRequest) {
+  let body: { scenario?: unknown; intensity?: number };
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: 'Request body must be valid JSON' },
+      { status: 400 }
+    );
+  }
+
+  try {
     const { scenario, intensity } = body;
 
     if (!scenario || typeof scenario !== 'string') {

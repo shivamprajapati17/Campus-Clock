@@ -2,22 +2,18 @@
 // Campus Clock – Supabase Middleware Helper
 //
 // Refreshes the Supabase auth session on every matched request and
-// guards /dashboard. Two access paths are supported:
-//   1. A real Supabase session (when the project is configured).
-//   2. An explicit demo persona cookie (the built-in reviewer flow).
-// When Supabase is unconfigured or unreachable we never block, so the
-// demo always keeps working.
+// guards /dashboard. Access is granted only by a real Supabase session;
+// the client-readable demo cookie is UI state, never an authorisation
+// token. When Supabase is unconfigured (a bare local preview) we never
+// block, so the app stays explorable without credentials.
 // ─────────────────────────────────────────────────────────────
 
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from './client';
 
-const DEMO_COOKIE = 'campus_clock_demo_user';
-
 export async function updateSession(request: NextRequest) {
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
-  const hasDemoSession = Boolean(request.cookies.get(DEMO_COOKIE));
 
   // Demo mode: Supabase is not configured, so never block access.
   if (!isSupabaseConfigured()) {
@@ -48,8 +44,7 @@ export async function updateSession(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // A real session OR an explicit demo persona both grant access.
-    if (!user && !hasDemoSession && isProtectedRoute) {
+    if (!user && isProtectedRoute) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
       // Remember where the user was headed so sign-in returns them there.

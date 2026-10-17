@@ -259,7 +259,7 @@ export default function UserManagementPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[720px]">
               <thead>
-                <tr className="border-b-3 border-black bg-[#FFE66D]">
+                <tr className="border-b-3 border-black bg-[#FFD54F]">
                   <th className="p-3.5 text-xs font-black uppercase tracking-wider text-black">
                     Name & Email
                   </th>
@@ -296,7 +296,7 @@ export default function UserManagementPage() {
                   const divName = divNameOf(u.division_id);
 
                   return (
-                    <tr key={u.id} className="hover:bg-[#FFF9F1] transition-colors">
+                    <tr key={u.id} className="hover:bg-[#F7FBF3] transition-colors">
                       <td className="p-3.5">
                         <span className="font-black text-sm text-black block">
                           {u.name}
@@ -322,7 +322,7 @@ export default function UserManagementPage() {
 
                       <td className="p-3.5">
                         {u.faculty_initial ? (
-                          <span className="px-2 py-0.5 rounded-md border border-black bg-[#42D1C3] text-xs font-black text-black">
+                          <span className="px-2 py-0.5 rounded-md border border-black bg-[#4DB6AC] text-xs font-black text-black">
                             {u.faculty_initial}
                           </span>
                         ) : (
@@ -334,7 +334,7 @@ export default function UserManagementPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEdit(u)}
-                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FFE66D] transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FFD54F] transition-colors cursor-pointer"
                             title="Edit user"
                             aria-label={`Edit ${u.name}`}
                           >
@@ -343,7 +343,7 @@ export default function UserManagementPage() {
 
                           <button
                             onClick={() => setPendingDelete(u)}
-                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#FF6B70] hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg border-2 border-black bg-white hover:bg-[#BF360C] hover:text-white transition-colors cursor-pointer"
                             title="Delete user"
                             aria-label={`Delete ${u.name}`}
                           >
@@ -366,6 +366,12 @@ export default function UserManagementPage() {
           title={editingId ? 'Edit Campus User' : 'Provision New Campus User'}
         >
           <form onSubmit={handleSubmit} className="space-y-4">
+            <p className="p-3 rounded-xl border-2 border-black/15 bg-[#F7FBF3] text-[11px] font-bold text-black/65">
+              This adds the person to the campus directory so they appear in
+              timetables, class lists and this portal. Sign-in credentials are
+              issued separately by your IT administrator.
+            </p>
+
             <Input
               label="Full Name"
               required
@@ -440,7 +446,7 @@ export default function UserManagementPage() {
             )}
 
             {formError && (
-              <div className="p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
+              <div className="p-3 rounded-xl border-2 border-[#BF360C] bg-[#FFEBEE] text-xs font-black text-[#BF360C]">
                 {formError}
               </div>
             )}
@@ -454,7 +460,7 @@ export default function UserManagementPage() {
                 Cancel
               </Button>
               <Button type="submit" variant="warning">
-                {editingId ? 'Save Changes' : 'Save & Grant Access'}
+                {editingId ? 'Save Changes' : 'Save User'}
               </Button>
             </div>
           </form>
@@ -469,13 +475,14 @@ export default function UserManagementPage() {
         >
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#FF6B70] border-2 border-black flex items-center justify-center text-white">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-[#BF360C] border-2 border-black flex items-center justify-center text-white">
                 <AlertTriangle className="w-5 h-5 stroke-[2.5]" />
               </div>
               <p className="text-sm font-bold text-black/80">
                 Remove{' '}
                 <span className="font-black">{pendingDelete?.name}</span> from
-                the campus directory? They will lose portal access immediately.
+                the campus directory? Existing timetable assignments keep their
+                record, but the person will no longer be listed here.
               </p>
             </div>
 

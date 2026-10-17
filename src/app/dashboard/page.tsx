@@ -7,12 +7,10 @@ import { StatCard } from '@/components/ui/StatCard';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import {
-  MOCK_TIMETABLES,
-  MOCK_FACULTY,
-  MOCK_NOTIFICATIONS,
-} from '@/lib/data/mockData';
+import { MOCK_FACULTY } from '@/lib/data/mockData';
 import { useMasterData } from '@/store/useMasterData';
+import { useTimetableData } from '@/store/useTimetableData';
+import { resolveDepartmentId } from '@/lib/utils';
 import {
   Sparkles,
   Calendar,
@@ -24,22 +22,44 @@ import {
   UserCheck,
   FileDown,
   MessageSquare,
-  AlertCircle,
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user } = useStore();
+  const { user, notifications } = useStore();
   const role = user?.role || 'management';
   const departments = useMasterData((s) => s.departments);
   const divisions = useMasterData((s) => s.divisions);
+  const timetables = useTimetableData((s) => s.timetables);
 
-  const publishedCount = MOCK_TIMETABLES.filter((t) => t.status === 'published').length;
-  const draftCount = MOCK_TIMETABLES.filter((t) => t.status === 'draft').length;
+  const scopeDeptId = resolveDepartmentId(
+    departments,
+    user?.department_id,
+    user?.department_code
+  );
+
+  // Staff see their whole scope; students and teachers only published rows.
+  const visibleTimetables = timetables.filter((t) => {
+    if (role === 'management') return true;
+    if (role === 'hod') return t.department_id === scopeDeptId;
+    return t.status === 'published';
+  });
+
+  const publishedCount = visibleTimetables.filter(
+    (t) => t.status === 'published'
+  ).length;
+  const draftCount = visibleTimetables.filter((t) => t.status === 'draft').length;
+
+  const myTimetable =
+    timetables.find(
+      (t) => t.division_id === user?.division_id && t.status === 'published'
+    ) ??
+    visibleTimetables.find((t) => t.status === 'published') ??
+    visibleTimetables[0];
 
   return (
     <div className="space-y-8">
       {/* ── Welcome Banner ── */}
-      <div className="nb-card bg-[#FFE66D] p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="nb-card bg-[#FFD54F] p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-black uppercase tracking-widest text-black/75">
@@ -79,7 +99,13 @@ export default function DashboardPage() {
           )}
 
           {(role === 'teacher' || role === 'student') && (
-            <Link href="/dashboard/timetable/tt-se-a-pub">
+            <Link
+              href={
+                myTimetable
+                  ? `/dashboard/timetable/${myTimetable.id}`
+                  : '/dashboard/timetable'
+              }
+            >
               <Button variant="outline" icon={<Calendar className="w-4 h-4" />}>
                 My Timetable
               </Button>
@@ -111,15 +137,15 @@ export default function DashboardPage() {
           value={publishedCount}
           subtitle={`${draftCount} in Draft status`}
           icon={<CheckCircle2 className="w-5 h-5 text-green-700" />}
-          color="#42D1C3"
+          color="#4DB6AC"
         />
 
         <StatCard
           title="Clash Rate"
           value="0.0%"
           subtitle="Backtracking Verified"
-          icon={<Sparkles className="w-5 h-5 text-[#FF6B70]" />}
-          color="#A78BFA"
+          icon={<Sparkles className="w-5 h-5 text-[#BF360C]" />}
+          color="#80CBC4"
         />
       </div>
 
@@ -147,13 +173,19 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {MOCK_TIMETABLES.map((tt) => (
+              {visibleTimetables.length === 0 && (
+                <p className="p-4 rounded-xl border-2 border-dashed border-black/25 bg-[#F7FBF3] text-xs font-bold text-black/60 text-center">
+                  No timetables in your scope yet. Posted schedules appear here.
+                </p>
+              )}
+
+              {visibleTimetables.map((tt) => (
                 <div
                   key={tt.id}
-                  className="p-4 rounded-xl border-3 border-black bg-[#FFF5EB] nb-shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:translate-x-1 transition-transform"
+                  className="p-4 rounded-xl border-3 border-black bg-[#F1F8E9] nb-shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:translate-x-1 transition-transform"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-black border-2 border-white text-[#FFE66D] flex items-center justify-center font-black">
+                    <div className="w-10 h-10 rounded-xl bg-black border-2 border-white text-[#FFD54F] flex items-center justify-center font-black">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <div>
@@ -196,7 +228,7 @@ export default function DashboardPage() {
           {/* Quick Shortcuts */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link href="/dashboard/faculty" className="block">
-              <Card hoverable className="p-4 bg-[#FF6B70] text-black">
+              <Card hoverable className="p-4 bg-[#BF360C] text-black">
                 <UserCheck className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Free Faculty</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -206,7 +238,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/chat" className="block">
-              <Card hoverable className="p-4 bg-[#FFA477] text-black">
+              <Card hoverable className="p-4 bg-[#A5D6A7] text-black">
                 <MessageSquare className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Live Chat</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -216,7 +248,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/exports" className="block">
-              <Card hoverable className="p-4 bg-[#42D1C3] text-black">
+              <Card hoverable className="p-4 bg-[#4DB6AC] text-black">
                 <FileDown className="w-6 h-6 mb-2 stroke-[2.5]" />
                 <h4 className="font-black text-sm uppercase">Export PDF</h4>
                 <p className="text-[11px] font-bold text-black/80 mt-0.5">
@@ -235,7 +267,7 @@ export default function DashboardPage() {
               <h3 className="text-sm font-black uppercase text-black">
                 Department Faculty
               </h3>
-              <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFE66D] border border-black">
+              <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFD54F] border border-black">
                 {MOCK_FACULTY.length} Active
               </span>
             </div>
@@ -247,7 +279,7 @@ export default function DashboardPage() {
                   className="flex items-center justify-between p-2 rounded-xl border-2 border-black/20 hover:border-black bg-white transition-all text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg bg-[#FFE66D] border border-black flex items-center justify-center font-black text-[11px]">
+                    <span className="w-7 h-7 rounded-lg bg-[#FFD54F] border border-black flex items-center justify-center font-black text-[11px]">
                       {fac.initials}
                     </span>
                     <div>
@@ -268,7 +300,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Activity Notifications */}
-          <Card className="p-5 bg-[#FFF9F1]">
+          <Card className="p-5 bg-[#F7FBF3]">
             <div className="flex items-center justify-between pb-3 border-b-2 border-black mb-3">
               <h3 className="text-sm font-black uppercase text-black flex items-center gap-1.5">
                 <Clock className="w-4 h-4" />
@@ -277,7 +309,13 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {MOCK_NOTIFICATIONS.map((notif) => (
+              {notifications.length === 0 && (
+                <p className="p-2.5 rounded-xl border-2 border-dashed border-black/20 text-xs font-bold text-black/50">
+                  No updates for your account yet.
+                </p>
+              )}
+
+              {notifications.map((notif) => (
                 <div
                   key={notif.id}
                   className="p-2.5 rounded-xl border-2 border-black bg-white text-xs"

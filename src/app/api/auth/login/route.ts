@@ -2,22 +2,45 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { MOCK_USERS } from '@/lib/data/mockData';
 
 export async function POST(request: NextRequest) {
+  let body: { email?: unknown; password?: unknown };
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: 'Request body must be valid JSON' },
+      { status: 400 }
+    );
+  }
+
+  try {
     const { email, password } = body;
 
-    if (!email) {
+    if (typeof email !== 'string' || !email || typeof password !== 'string') {
       return NextResponse.json(
-        { ok: false, error: 'Email is required' },
+        { ok: false, error: 'Email and password are required' },
         { status: 400 }
       );
     }
 
+    // Only the seeded demo identities have a known password in the bundled
+    // fixture. Everything else is rejected, so this endpoint can never mint a
+    // session for an arbitrary address.
+    const DEMO_PASSWORDS: Record<string, string> = {
+      'management@campus.edu': 'admin123',
+      'hod.cmpn@campus.edu': 'hod123',
+      'teacher.mj@campus.edu': 'teach123',
+      'teacher.a1@campus.edu': 'teach123',
+      'student.a1@campus.edu': 'stud123',
+    };
+
+    const cleanEmail = email.trim().toLowerCase();
+    const expectedPassword = DEMO_PASSWORDS[cleanEmail];
+
     const user = MOCK_USERS.find(
-      (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+      (u) => u.email.toLowerCase() === cleanEmail
     );
 
-    if (!user) {
+    if (!user || !expectedPassword || expectedPassword !== password) {
       return NextResponse.json(
         { ok: false, error: 'Invalid credentials' },
         { status: 401 }

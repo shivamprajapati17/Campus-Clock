@@ -46,21 +46,21 @@ const PROFILES: Record<
     department_code: null,
   },
   hod: {
-    name: 'Prof. Rajesh Kulkarni',
+    name: 'Prof. Bhushan Sir',
     email: 'hod.cmpn@campus.edu',
     password: 'hod123',
     department_id: DEMO_DEPARTMENT_ID,
     division_id: null,
-    faculty_initial: 'RK',
+    faculty_initial: 'BS',
     department_code: 'CMPN',
   },
   teacher: {
-    name: 'Prof. Anita Sharma',
-    email: 'teacher.a1@campus.edu',
+    name: 'Prof. Manthan Joshi',
+    email: 'teacher.mj@campus.edu',
     password: 'teach123',
     department_id: DEMO_DEPARTMENT_ID,
     division_id: DEMO_DIVISION_ID,
-    faculty_initial: 'AS',
+    faculty_initial: 'MJ',
     department_code: 'CMPN',
   },
   student: {
@@ -128,9 +128,7 @@ function LoginForm() {
             password,
           });
 
-        let authUser = signInData?.user ?? null;
-
-        if (signInError) {
+        let authUser = signInData?.user ?? null;          if (signInError) {
           const msg = signInError.message ?? '';
           const unknownAccount =
             (signInError as { code?: string }).code === 'invalid_credentials' ||
@@ -140,8 +138,23 @@ function LoginForm() {
             throw new Error(msg || 'Sign-in failed. Please try again.');
           }
 
-          // 2. No account for this email yet — register it with the chosen role
-          //    so the visitor can use their own address, not just the samples.
+          // 2. No account for this email yet — register it as a student or
+          //    teacher. Management and HOD access is provisioned by the college,
+          //    so a visitor cannot grant themselves admin rights by typing an
+          //    address. The seeded demo identities are the only exception, and
+          //    only for their own fixed email.
+          const privilegedRole =
+            selectedRole === 'management' || selectedRole === 'hod';
+          const isSeededIdentity = Boolean(
+            profile && cleanEmail === profile.email.toLowerCase()
+          );
+
+          if (privilegedRole && !isSeededIdentity) {
+            throw new Error(
+              'Management and HOD accounts are created by the college. Ask your administrator to provision this email, or sign in with an existing account.'
+            );
+          }
+
           const { data: signUpData, error: signUpError } =
             await supabase.auth.signUp({
               email: cleanEmail,
@@ -238,17 +251,17 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF5EB] flex flex-col justify-center items-center p-4">
+    <div className="min-h-screen bg-[#F1F8E9] flex flex-col justify-center items-center p-4">
       {/* Brand Header */}
       <Link href="/" className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-2xl bg-[#FF6B70] border-3 border-black nb-shadow flex items-center justify-center text-white">
+        <div className="w-12 h-12 rounded-2xl bg-[#BF360C] border-3 border-black nb-shadow flex items-center justify-center text-white">
           <Clock className="w-7 h-7 stroke-[2.5]" />
         </div>
         <div>
           <span className="font-black text-2xl uppercase tracking-tighter block text-black">
             Campus Clock
           </span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6B70]">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#BF360C]">
             Single Sign-On Portal
           </span>
         </div>
@@ -267,14 +280,14 @@ function LoginForm() {
         </div>
 
         {/* ── 1-Click Role Selectors ── */}
-        <div className="mb-6 p-4 rounded-xl border-3 border-black bg-[#FFF9F1] nb-shadow-sm">
+        <div className="mb-6 p-4 rounded-xl border-3 border-black bg-[#F7FBF3] nb-shadow-sm">
           <div className="flex items-center justify-between mb-2.5">
             <span className="text-xs font-black uppercase text-black flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF6B70]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#BF360C]" />
               <span>1 · Choose your role</span>
             </span>
             <span className="text-[10px] font-bold text-black/60">
-              Sets your permissions
+              Sample identities
             </span>
           </div>
 
@@ -284,8 +297,8 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('management')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'management'
-                  ? 'bg-[#FF6B70] text-white nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#FF6B70]/10'
+                  ? 'bg-[#BF360C] text-white nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#BF360C]/10'
               }`}
             >
               <span>👔 Dean</span>
@@ -297,12 +310,11 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('hod')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'hod'
-                  ? 'bg-[#A78BFA] text-black nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#A78BFA]/10'
+                  ? 'bg-[#80CBC4] text-black nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#80CBC4]/10'
               }`}
-            >
-              <span>🎓 HOD</span>
-              <span className="text-[9px] font-bold opacity-80">CMPN</span>
+            >                  <span>🎓 HOD</span>
+                  <span className="text-[9px] font-bold opacity-80">BS</span>
             </button>
 
             <button
@@ -310,12 +322,12 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('teacher')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'teacher'
-                  ? 'bg-[#42D1C3] text-black nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#42D1C3]/10'
+                  ? 'bg-[#4DB6AC] text-black nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#4DB6AC]/10'
               }`}
             >
-              <span>👩‍🏫 Teacher</span>
-              <span className="text-[9px] font-bold opacity-80">SE-A</span>
+              <span>👨‍🏫 Teacher</span>
+              <span className="text-[9px] font-bold opacity-80">MJ</span>
             </button>
 
             <button
@@ -323,8 +335,8 @@ function LoginForm() {
               onClick={() => handleQuickSelectRole('student')}
               className={`p-2 rounded-xl border-2 border-black font-black text-xs uppercase transition-transform flex flex-col items-center gap-0.5 cursor-pointer ${
                 selectedRole === 'student'
-                  ? 'bg-[#FFE66D] text-black nb-shadow-sm -translate-y-0.5'
-                  : 'bg-white text-black hover:bg-[#FFE66D]/20'
+                  ? 'bg-[#FFD54F] text-black nb-shadow-sm -translate-y-0.5'
+                  : 'bg-white text-black hover:bg-[#FFD54F]/20'
               }`}
             >
               <span>🎒 Student</span>
@@ -341,7 +353,7 @@ function LoginForm() {
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl border-2 border-[#FF6B70] bg-[#FFE3E4] text-xs font-black text-[#FF6B70]">
+          <div className="mb-4 p-3 rounded-xl border-2 border-[#BF360C] bg-[#FFEBEE] text-xs font-black text-[#BF360C]">
             {error}
           </div>
         )}
@@ -381,13 +393,11 @@ function LoginForm() {
             </p>
           </div>
 
-          <div className="flex items-center justify-between text-xs font-bold pt-1">
-            <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input type="checkbox" defaultChecked className="nb-checkbox" />
-              <span className="text-black/80">Remember session</span>
-            </label>
-            <span className="text-black/50 hover:underline cursor-pointer">
-              Forgot password?
+          <div className="flex items-start gap-2 p-3 rounded-xl border-2 border-black/15 bg-[#F7FBF3] text-[11px] font-bold text-black/65">
+            <Lock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <span>
+              Sessions stay signed in on this device. Password resets are handled
+              by your department administrator.
             </span>
           </div>
 
@@ -418,7 +428,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FFF5EB] flex items-center justify-center font-black">Loading Login...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F1F8E9] flex items-center justify-center font-black">Loading Login...</div>}>
       <LoginForm />
     </Suspense>
   );

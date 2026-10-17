@@ -14,7 +14,7 @@ export function Loader({ text = 'Loading Campus Clock...', className, fullScreen
   const content = (
     <div className={cn('flex flex-col items-center justify-center gap-3 p-6 text-center', className)}>
       <div className="relative">
-        <div className="w-16 h-16 rounded-2xl bg-[#FFE66D] border-3 border-black nb-shadow flex items-center justify-center animate-bounce">
+        <div className="w-16 h-16 rounded-2xl bg-[#FFD54F] border-3 border-black nb-shadow flex items-center justify-center animate-bounce">
           <Clock className="w-8 h-8 text-black stroke-[2.5]" />
         </div>
       </div>

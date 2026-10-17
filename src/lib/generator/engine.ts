@@ -42,7 +42,7 @@ type DayCount = Record<string, Record<number, number>>;
 // ── Constants ─────────────────────────────────────────────────
 
 const TOTAL_DAYS = 5; // Mon–Fri
-const TOTAL_SLOTS = 7; // 7 teaching slots per day
+const TOTAL_SLOTS = 8; // 8 periods per day; slot 4 is the lunch break
 const BACKTRACK_LIMIT = 100;
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -234,6 +234,11 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
       for (let slot = 1; slot <= TOTAL_SLOTS; slot++) {
         // For multi-slot tasks, ensure all slots fit within the day
         if (slot + task.slotsNeeded - 1 > TOTAL_SLOTS) continue;
+
+        // Never place anything in the lunch period.
+        if (slot <= BREAK_AFTER_SLOT && slot + task.slotsNeeded - 1 >= BREAK_AFTER_SLOT) {
+          continue;
+        }
 
         // For 2-slot practicals, the slots must be truly consecutive
         if (task.slotsNeeded === 2 && !areConsecutive(slot, slot + 1)) continue;

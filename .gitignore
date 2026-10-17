@@ -42,3 +42,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# android build intermediates and signing material
+/android/build/
+/android/local.properties
+/android/.android-signing.keystore
+/android/*.apk.idsig
