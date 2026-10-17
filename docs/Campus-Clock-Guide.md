@@ -502,6 +502,10 @@ Optional — for real Supabase authentication, create `.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# Optional — the Sprout assistant LLM (server-side only)
+NVIDIA_API_KEY=
+NVIDIA_MODEL=meta/llama-3.2-11b-vision-instruct
 ```
 
 Without those variables the app still runs: sign-in falls back to the bundled
@@ -609,12 +613,17 @@ send button and five offline answers per language.
 Requests go to `POST /api/chat` with `{ messages, lang, role, context }`.
 `src/lib/chatTools.ts` detects the intent (free faculty, today's timetable,
 publishing, exports, permissions) and answers from the real published timetables
-and faculty roster — so the bot is useful with no API key at all. When
-`ANTHROPIC_API_KEY` is set, the route adds that tool context to the system prompt
-and asks Claude to phrase the reply; any failure falls back to the local answer.
-The key is read only in the server route and is never prefixed with
-`NEXT_PUBLIC_`. `GET /api/chat` reports the languages and published timetables the
-bot can see.
+and faculty roster — so the bot is useful with no API key at all.
+
+The route then tries an LLM in this order: **NVIDIA NIM**
+(`NVIDIA_API_KEY`, OpenAI-compatible `integrate.api.nvidia.com`, default model
+`meta/llama-3.2-11b-vision-instruct`) → **Anthropic** (`ANTHROPIC_API_KEY`) → the
+local answer. Tool context is added to the system prompt, the call is capped at
+20 s and 240 output tokens, and an empty response (reasoning-only models) or any
+HTTP error falls through to the next option. Keys are read only inside the route
+handler and are never prefixed with `NEXT_PUBLIC_`, so they never reach the
+browser bundle. `GET /api/chat` reports the active provider, model, languages and
+published timetables the bot can see.
 
 ### Architecture
 

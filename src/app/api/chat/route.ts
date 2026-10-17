@@ -16,11 +16,45 @@ export const dynamic = 'force-dynamic';
 
 const MAX_MESSAGES = 10;
 const MAX_CHARS = 2000;
+const LLM_TIMEOUT_MS = 20000;
+
+/** Reading order: NVIDIA NIM (OpenAI-compatible) → Anthropic → local engine. */
+const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const DEFAULT_NVIDIA_MODEL = 'meta/llama-3.2-11b-vision-instruct';
+const NVIDIA_FALLBACK_MODEL = 'openai/gpt-oss-20b';
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-haiku-latest';
+
+const LANG_NAME: Record<ChatLang, string> = {
+  en: 'English',
+  hi: 'Hindi (Devanagari script)',
+  es: 'Spanish',
+  fr: 'French',
+};
+
+interface LlmReply {
+  text: string;
+  source: 'nvidia' | 'anthropic';
+}
 
 /** GET is a small discovery endpoint so the widget and smoke tests can verify
  *  which languages and published timetables the bot can actually see. */
 export async function GET() {
-  return NextResponse.json({ ok: true, data: chatToolSummary() });
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+
+  return NextResponse.json({
+    ok: true,
+    data: {
+      ...chatToolSummary(),
+      provider: nvidiaKey ? 'nvidia' : anthropicKey ? 'anthropic' : 'local',
+      model: nvidiaKey
+        ? process.env.NVIDIA_MODEL || DEFAULT_NVIDIA_MODEL
+        : anthropicKey
+          ? process.env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL
+          : null,
+    },
+  });
 }
 
 function fallbackReply(lang: ChatLang): string {
@@ -31,6 +65,129 @@ function fallbackReply(lang: ChatLang): string {
     fr: "⚠️ L'assistant est occupé. Utilisez Emplois du temps, Enseignants libres et Exports depuis le menu.",
   };
   return replies[lang];
+}
+
+function systemPrompt(question: string, lang: ChatLang, context: ChatRequestContext): string {
+  return [
+    "You are Sprout, Campus Clock's campus timetable assistant.",
+    buildLlmContext(question, lang, context),
+    `Reply in ${LANG_NAME[lang]}. Be brief (max 90 words) and only talk about Campus Clock: timetables, free faculty, publishing, exports and role permissions.`,
+  ].join('\n');
+}
+
+async function withTimeout<T>(ms: number, run: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await run(controller.signal);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** OpenAI-compatible NVIDIA NIM call. Returns null when the model is unusable. */
+async function callNvidia(
+  model: string,
+  messages: ChatTurn[],
+  system: string,
+  signal: AbortSignal
+): Promise<string | null> {
+  const response = await fetch(NVIDIA_URL, {
+    method: 'POST',
+    signal,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${process.env.NVIDIA_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      // Answers are capped at ~90 words, so a small budget keeps latency low.
+      max_tokens: 240,
+      temperature: 0.2,
+      top_p: 0.9,
+      messages: [{ role: 'system', content: system }, ...messages],
+    }),
+  });
+
+  if (!response.ok) throw new Error(`NVIDIA ${response.status}`);
+
+  const data = (await response.json()) as {
+    choices?: { message?: { content?: string | null; reasoning_content?: string | null } }[];
+  };
+  const message = data.choices?.[0]?.message;
+
+  // Reasoning models can spend the whole budget on reasoning and return no
+  // text; treat that as a miss so the next provider still gets a turn.
+  return message?.content?.trim() || null;
+}
+
+async function callAnthropic(
+  model: string,
+  messages: ChatTurn[],
+  system: string,
+  signal: AbortSignal
+): Promise<string | null> {
+  const response = await fetch(ANTHROPIC_URL, {
+    method: 'POST',
+    signal,
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY as string,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 400,
+      system,
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    }),
+  });
+
+  if (!response.ok) throw new Error(`Anthropic ${response.status}`);
+
+  const data = (await response.json()) as {
+    content?: { type?: string; text?: string }[];
+  };
+  return data.content?.find((c) => c.type === 'text')?.text?.trim() || null;
+}
+
+/**
+ * Ask the configured LLM. Never throws: a failed or empty call returns null so
+ * the caller falls back to the deterministic local answer.
+ */
+async function askLlm(
+  messages: ChatTurn[],
+  system: string
+): Promise<LlmReply | null> {
+  try {
+    if (process.env.NVIDIA_API_KEY) {
+      const text = await withTimeout(LLM_TIMEOUT_MS, async (signal) => {
+        const primary = process.env.NVIDIA_MODEL || DEFAULT_NVIDIA_MODEL;
+        const first = await callNvidia(primary, messages, system, signal);
+        if (first) return first;
+        if (primary === NVIDIA_FALLBACK_MODEL) return null;
+        return await callNvidia(NVIDIA_FALLBACK_MODEL, messages, system, signal);
+      });
+      if (text) return { text, source: 'nvidia' };
+    }
+
+    if (process.env.ANTHROPIC_API_KEY) {
+      const text = await withTimeout(LLM_TIMEOUT_MS, (signal) =>
+        callAnthropic(
+          process.env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
+          messages,
+          system,
+          signal
+        )
+      );
+      if (text) return { text, source: 'anthropic' };
+    }
+  } catch (err) {
+    // A timeout, a 429 or an outage all land here. The local engine answers.
+    console.warn('[campus-clock] assistant LLM unavailable', err);
+  }
+
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -104,9 +261,10 @@ export async function POST(request: NextRequest) {
     // The local engine always has a real answer, so an LLM outage can never
     // leave the user with nothing.
     const local = buildLocalAnswer(lastUser.content, lang, context);
+    const configured =
+      Boolean(process.env.NVIDIA_API_KEY) || Boolean(process.env.ANTHROPIC_API_KEY);
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
+    if (!configured) {
       return NextResponse.json({
         ok: true,
         data: {
@@ -119,55 +277,21 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-latest',
-          max_tokens: 400,
-          system: [
-            "You are Sprout, Campus Clock's campus timetable assistant.",
-            buildLlmContext(lastUser.content, lang, context),
-            `Reply in ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'French'}.`,
-          ].join('\n'),
-          messages: messages.map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
+    const llm = await askLlm(
+      messages,
+      systemPrompt(lastUser.content, lang, context)
+    );
 
-      if (!response.ok) throw new Error(`Anthropic ${response.status}`);
-
-      const data = (await response.json()) as {
-        content?: { type?: string; text?: string }[];
-      };
-      const text = data.content?.find((c) => c.type === 'text')?.text?.trim();
-
-      return NextResponse.json({
-        ok: true,
-        data: {
-          reply: text || local.reply,
-          lang,
-          intent: local.intent,
-          division: local.division,
-          source: text ? 'llm' : 'local',
-        },
-      });
-    } catch {
-      return NextResponse.json({
-        ok: true,
-        data: {
-          reply: local.reply,
-          lang,
-          intent: local.intent,
-          division: local.division,
-          source: 'local-fallback',
-        },
-      });
-    }
+    return NextResponse.json({
+      ok: true,
+      data: {
+        reply: llm?.text || local.reply,
+        lang,
+        intent: local.intent,
+        division: local.division,
+        source: llm ? llm.source : 'local-fallback',
+      },
+    });
   } catch {
     return NextResponse.json(
       { ok: false, error: fallbackReply('en') },

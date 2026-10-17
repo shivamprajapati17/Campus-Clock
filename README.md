@@ -120,7 +120,9 @@ chatbot flow 1–6: user → widget → `/api/chat` → timetable tools → opti
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Recommended | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Recommended | Supabase anon key |
-| `ANTHROPIC_API_KEY` | Optional | Upgrades Sprout to an LLM. **Server-side only** — never prefix it with `NEXT_PUBLIC_`. Without it the assistant answers from real timetable data in all four languages. |
+| `NVIDIA_API_KEY` | Optional | Primary Sprout LLM (NVIDIA NIM, OpenAI-compatible endpoint). **Server-side only** — never prefix it with `NEXT_PUBLIC_`. Without any LLM key the assistant answers from real timetable data in all four languages. |
+| `NVIDIA_MODEL` | Optional | Model id; defaults to `meta/llama-3.2-11b-vision-instruct` |
+| `ANTHROPIC_API_KEY` | Optional | Alternative provider, used when no NVIDIA key is set |
 | `ANTHROPIC_MODEL` | Optional | Model id; defaults to `claude-3-5-haiku-latest` |
 
 ### 🤖 Sprout — the multilingual assistant
@@ -128,8 +130,9 @@ chatbot flow 1–6: user → widget → `/api/chat` → timetable tools → opti
 - Floating 🌱 button on every page; panel with a language dropdown (English, हिन्दी, Español, Français).
 - Quick replies: free teachers now, my timetable, export PDF.
 - Real answers from the seeds: free-faculty lookup, today's periods for the signed-in division, publish steps and role permissions.
-- Five canned answers per language are used if the network or the LLM fails, so the demo never breaks.
-- `GET /api/chat` exposes which languages and published timetables the bot can see (handy for smoke tests).
+- Provider order: **NVIDIA NIM** (`NVIDIA_API_KEY`) → Anthropic (`ANTHROPIC_API_KEY`) → the local answer engine. A timeout, a rate limit or an empty model response falls back to the local answer, so the chat never dead-ends.
+- Five canned answers per language are used if the network fails entirely.
+- `GET /api/chat` reports the active provider, model, languages and published timetables the bot can see (handy for smoke tests).
 
 ### 🎓 ECS B — real seeded class
 
