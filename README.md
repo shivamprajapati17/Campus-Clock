@@ -14,6 +14,9 @@
 - **Live Production URL**: [https://campusclock.vercel.app/](https://campusclock.vercel.app/)
 - **GitHub Repository**: [https://github.com/shivamprajapati17/Campus-Clock.git](https://github.com/shivamprajapati17/Campus-Clock.git)
 
+- <img width="1920" height="956" alt="image" src="https://github.com/user-attachments/assets/d21ec569-2b77-4cb9-8f4f-285669df8e15" />
+
+
 ---
 
 ## 📖 Documentation
