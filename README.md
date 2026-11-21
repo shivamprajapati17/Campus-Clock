@@ -14,8 +14,7 @@
 - **Live Production URL**: [https://campusclock.vercel.app/](https://campusclock.vercel.app/)
 - **GitHub Repository**: [https://github.com/shivamprajapati17/Campus-Clock.git](https://github.com/shivamprajapati17/Campus-Clock.git)
 
-- <img width="1920" height="956" alt="image" src="https://github.com/user-attachments/assets/d21ec569-2b77-4cb9-8f4f-285669df8e15" />
-
+<img width="1920" height="956" alt="image" src="https://github.com/user-attachments/assets/d21ec569-2b77-4cb9-8f4f-285669df8e15" />
 
 ---
 
@@ -169,10 +168,14 @@ per-day breaks (P4 on Mon/Wed/Fri, P6 on Tue/Thu) and labelled lab batches.
 > Authentication is backed by Supabase; the remaining handlers read from the in-app seed data.
 > See [What is real and what is simulated](docs/Campus-Clock-Guide.md#12-what-is-real-and-what-is-simulated).
 
-
 ---
 
 ## 💻 Local Development Setup
+
+### 📋 Prerequisites
+- **Node.js** 18.17 or higher
+- **npm** (v9+) or **pnpm** / **yarn**
+- **Git** installed on your machine
 
 ### 1. Clone the repository
 ```bash
@@ -234,6 +237,18 @@ The script compiles resources with `aapt2`, dexes with `d8`, aligns with
 beyond the local SDK. The signing key is generated on first run as
 `android/.android-signing.keystore` and is deliberately **not** committed — keep
 it if you want to ship updates that Android will accept as the same app.
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+1. **Fork** the project
+2. **Create your feature branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
 
 ---
 
